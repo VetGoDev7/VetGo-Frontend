@@ -1,0 +1,21 @@
+@import './base.css';
+
+:root{
+  --cor-fundo:#EAEAEA;
+  --branco: #FFFFFF;
+  --verde-claro:#94C38F;
+  --verde-escuro:#42723E;
+  --cor-fonts:#000000;
+}
+
+*{
+  margin: 0 auto;
+ 
+ 
+}
+body{
+  background-color:var(--cor-fundo);
+}
+
+
+
