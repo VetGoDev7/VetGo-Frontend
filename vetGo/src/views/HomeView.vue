@@ -60,39 +60,64 @@ import '@/assets/base.css'
           <p>Dermatologia</p>
         </div>
       </div>
-      <img src="/baixo.png" alt="onda baixo" class="onda-baixo" />
+      <img src="/baixo.png" class="onda-baixo" />
     </section>
-    <!-- Onda de baixo -->
-    <div class="onda-baixo">
-      <img src="/baixo.png" alt="decoração baixo" />
-    </div>
-  </main>
-</template>
-
-<!--
     <section class="veterinarios">
       <h2>Veterinários</h2>
       <div class="cards-veterinarios">
-        <div class="card-vet">Dra. Júlia</div>
-        <div class="card-vet">Dra. Maria</div>
-        <div class="card-vet">Dra. Marta</div>
-        <div class="card-vet">Dr. Lucas</div>
-        <div class="card-vet">Dr. Paulo</div>
-        <div class="card-vet">Dr. Enzo</div>
+        <div class="card-vet">
+          <img src="/vetisa.png" />
+          <p>Dra. Isabel</p>
+        </div>
+        <div class="card-vet">
+          <img src="/vetmari.png" />
+          <p>Dra. Maria</p>
+        </div>
+        <div class="card-vet">
+          <img src="/vetmar.png" />
+          <p>Dra. Marta</p>
+        </div>
+        <div class="card-vet">
+          <img src="/vetp.png" />
+          <p>Dr. Paulo</p>
+        </div>
+        <div class="card-vet">
+          <img src="/vetpe.png" />
+          <p>Dr. Pedro</p>
+        </div>
+        <div class="card-vet">
+          <img src="/vetr.png" />
+          <p>Dra. Rute</p>
+        </div>
       </div>
     </section>
 
     <footer class="rodape">
-      <div class="logo-footer">VetGo🐾</div>
-      <div class="info">
-        <p>Contato, endereço, direitos reservados...</p>
-        <div class="socials">
-          <img src="" alt="Instagram" />
-          <img src="" alt="WhatsApp" />
+      <div class="container-footer">
+        <div class="coluna-logo">
+          <img src="/logobranca.png" class="logo-footer" />
+          <p>
+            Na VetGo, oferecemos atendimento especializado e acolhedor para cães e gatos, com uma
+            equipe dedicada ao bem-estar, saúde e felicidade dos seus companheiros de quatro patas."
+          </p>
+        </div>
+
+        <div class="coluna-links">
+          <ul>
+            <li><router-link to="/servicos">Serviços</router-link></li>
+            <li>Termos e Condições</li>
+            <li>Política de Privacidade</li>
+            <li><router-link to="/sobrenos">Sobre Nós</router-link></li>
+          </ul>
+        </div>
+
+        <div class="coluna-logo">
+          <img class="paw-decor3" src="/patinhas3.png" />
         </div>
       </div>
     </footer>
-    -->
+  </main>
+</template>
 
 <style scoped>
 .home-view {
@@ -182,7 +207,7 @@ import '@/assets/base.css'
 }
 
 .text-content h1 {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   font-weight: bold;
@@ -191,7 +216,7 @@ import '@/assets/base.css'
 }
 
 .text-content p {
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-family: 'Montserrat', sans-serif;
   font-weight: 400;
   line-height: 1.6;
@@ -208,7 +233,7 @@ import '@/assets/base.css'
   position: relative;
   background-color: var(--verde-claro);
   padding: 140px 20px 100px;
-   margin-top: 150px;
+  margin-top: 150px;
   width: 100vw;
   height: 50vw;
   text-align: center;
@@ -226,16 +251,16 @@ import '@/assets/base.css'
 .onda-baixo {
   position: absolute;
   bottom: 0;
+  margin-bottom: -60px;
   left: 0;
   width: 100%;
   z-index: 1;
 }
 .servicos h2 {
   font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  font-size: 2.2rem;
+  font-weight: 600;
+  font-size: 3rem;
   margin-bottom: 20px;
-  
 }
 .cards-servicos {
   display: grid;
@@ -243,9 +268,7 @@ import '@/assets/base.css'
   gap: 30px;
   max-width: 1000px;
   margin: 40px auto 0;
-  padding: 0 20px;
-  position: relative;
-  z-index: 2;
+  padding: 20px;
 }
 
 .cards-servicos,
@@ -272,71 +295,134 @@ import '@/assets/base.css'
 }
 .card p {
   font-weight: 500;
+  font-size: 1.2rem;
   font-family: 'Montserrat', sans-serif;
   color: #333;
 }
 
-/* VETERINÁRIOS 
-
 .veterinarios {
-  background-color: #fff;
-  padding: 3rem 1rem;
+  padding-top: 80px;
+  padding-bottom: 3rem;
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .veterinarios h2 {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  color: #2e5837;
+  font-size: 3rem;
+  margin-bottom: 5rem;
+  color: #111;
+  font-family: 'Montserrat', sans-serif;
+  margin-top: -250px;
 }
 
 .cards-veterinarios {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 1rem;
-  max-width: 800px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
 .card-vet {
-  background-color: #eaf9e9;
+  background-color: #fff;
+  height: 250px;
+  width: 250px;
   border-radius: 1rem;
-  padding: 1rem;
-  font-weight: 500;
-  color: #2e5837;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 30px 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
- FOOTER 
+.card-vet img {
+  width: 100px;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 0.8rem;
+}
+
+.card-vet p {
+  font-weight: 500;
+  font-size: 1.2rem;
+  color: #222;
+  font-size: 1rem;
+  font-family: 'Montserrat', sans-serif;
+}
 
 .rodape {
-  background-color: #b5dcb4;
+  background-color: #a1cfa0;
+  margin-top: 5rem;
+  width: 100%;
   padding: 2rem 1rem;
-  text-align: center;
-  color: #2e5837;
+  color: white;
+  font-family: sans-serif;
+}
+
+.container-footer {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: auto;
+  gap: 2rem;
+}
+
+.coluna-logo {
+  flex: 1;
+  min-width: 250px;
 }
 
 .logo-footer {
-  font-size: 1.3rem;
-  font-weight: bold;
+  width: 150px;
   margin-bottom: 1rem;
 }
 
-.info {
-  font-size: 0.9rem;
+.coluna-logo p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+.coluna-links a {
+  text-decoration: none;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
 }
 
-.socials {
-  margin-top: 1rem;
+.coluna-links a:hover {
+  text-decoration: underline;
+}
+
+.coluna-links {
+  flex: 1;
+  min-width: 200px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.coluna-links ul {
+  list-style: none;
+  padding: 0;
+}
+
+.coluna-links li {
+  margin: 0.5rem 0;
+  cursor: pointer;
+}
+
+.coluna-logo {
+  flex: 1;
+  min-width: 200px;
   display: flex;
-  justify-content: center;
-  gap: 1rem;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
-.socials img {
-  width: 24px;
-  height: 24px;
+.paw-decor3 {
+  margin-top: 70px;
+  margin-left: -95px;
 }
 
-*/
 </style>
