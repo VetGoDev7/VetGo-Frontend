@@ -58,7 +58,7 @@ import '@/assets/base.css'
 .nav-links a {
   text-decoration: none;
   color: #333;
-  font-size: 1rem;
+  font-size: 1.2rem;
   padding: 8px 16px;
   border-radius: 20px;
 }
