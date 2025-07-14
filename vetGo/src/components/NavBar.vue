@@ -42,7 +42,7 @@ import '@/assets/base.css'
 }
 
 .logo-img {
-  height: 6em;
+  height: 7em;
   object-fit: contain;
 }
 
@@ -59,7 +59,7 @@ import '@/assets/base.css'
   text-decoration: none;
   color: #333;
   font-size: 1.2rem;
-  padding: 8px 16px;
+  padding: 6px 10px;
   border-radius: 20px;
 }
 
@@ -74,11 +74,7 @@ import '@/assets/base.css'
 }
 .login-button {
   background-color: var(  --cor-botao);
-   border: 3px solid rgba(150, 236, 92, 0.4);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: 500;
+  border: 3px solid rgba(150, 236, 92, 0.4);
   text-align: center;
 }
 
