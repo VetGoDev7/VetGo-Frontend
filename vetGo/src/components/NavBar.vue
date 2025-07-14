@@ -74,7 +74,7 @@ import '@/assets/base.css'
 }
 .login-button {
   background-color: var(  --cor-botao);
-   border: 3px solid rgba(150, 236, 92, 0.4);
+  border: 3px solid rgba(150, 236, 92, 0.4);
   color: white;
   padding: 8px 16px;
   border-radius: 20px;

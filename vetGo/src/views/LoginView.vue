@@ -1,6 +1,167 @@
+<script setup>
+import '@/assets/base.css'
+</script>
+
 <template>
-  <div>
-    <h1>teste</h1>
-    
-  </div>
+  <section class="login-container">
+    <div class="login-card">
+
+      <div class="login-left">
+        <h1>Bem-Vindo Ao VetGo!</h1>
+
+        <button class="google-btn">
+          <img src="/google.png"  />
+          Entre com o Google
+        </button>
+
+        <div class="separator">
+          <span> ou </span>
+        </div>
+
+        <form class="login-form">
+          <input type="email" placeholder="Email" />
+          <input type="password" placeholder="Senha" />
+          <a href="#" class="forgot-password">Esqueceu sua senha?</a>
+        </form>
+        <button type="submit" class="login-btn">Login</button>
+
+
+        <p class="register-text">Não tem conta? <a href="#">Cadastre-se</a></p>
+      </div>
+
+      <div class="login-right">
+        <img src="/dogFofo.png" alt="Cachorro fofo" />
+      </div>
+
+    </div>
+  </section>
 </template>
+
+
+<style setup>
+.login-container {
+  background-color: var(  --cor-fundo);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-card {
+  display: flex;
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: 900px;
+  max-width: 95%;
+}
+
+.login-left {
+  background-color: var( --verde-claro);
+  padding: 50px 40px;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #000;
+}
+
+.login-left h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  text-align: center;
+  font-size: 50px;
+  margin-bottom: 40px;
+}
+
+.google-btn {
+  border: var(  --borda-botao);
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  font-size: 13 px;
+  cursor: pointer;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.google-btn img {
+  width: 25px;
+  height: 20px;
+}
+
+.separator {
+  text-align: center;
+  font-size: 17px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  color:#000;
+  margin-bottom: 20px;
+}
+
+.separator hr {
+  flex: 1;
+  border: none;
+  height: 1px;
+  background-color:  var(--cor-fundo);
+}
+
+.login-form input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.forgot-password {
+  font-size: 14px;
+  color: var(--cor-fundo);
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.login-btn {
+  background-color: var(--cor-botao);
+  border: 2px solid rgba(255, 255, 255, 0.603);
+  color: var( --cor-fundo);
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.login-btn:hover {
+  color: #fff;
+}
+
+.register-text {
+  margin-top: 25px;
+  font-size: 14px;
+  color: #333;
+}
+
+.register-text a {
+  color: var(--cor-fundo);
+  text-decoration: none;
+}
+
+.login-right {
+  width: 50%;
+}
+
+.login-right img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+</style>
