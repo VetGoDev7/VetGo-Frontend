@@ -74,7 +74,7 @@ import '@/assets/base.css'
   padding: 8px 16px;
   border-radius: 20px;
   font-weight: 500;
-
+}
 
 </style>
 
