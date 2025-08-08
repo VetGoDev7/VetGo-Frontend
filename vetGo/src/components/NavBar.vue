@@ -67,16 +67,14 @@ import '@/assets/base.css'
   background-color: #f0f0f0;
 }
 
-.nav-links a.router-link-exact-active {
-  background-color: #A7D7A7; 
-  color: #fff;
-  font-weight: bold;
-}
 .login-button {
   background-color: var(  --cor-botao);
   border: 3px solid rgba(150, 236, 92, 0.4);
-  text-align: center;
-}
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+
 
 </style>
 

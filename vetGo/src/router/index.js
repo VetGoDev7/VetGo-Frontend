@@ -15,32 +15,32 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/',
+      path: '/sobrenos',
       name: 'sobrenos',
       component: SobreNosView,
     },
     {
-      path:'/',
+      path:'/agenda',
       name: 'agenda',
       component: AgendaView,
     },
     {
-      path: '/',
+      path: '/vet',
       name: 'vet',
       component: VetView,
     },
     {
-      path: '/',
+      path: '/servico',
       name: 'servico',
       component: ServicoView,
     },
     {
-      path: '/',
+      path: '/login',
       name: 'login',
       component: LoginView,
     },
     {
-      path:'/',
+      path:'/cadastro',
       name: 'cadastro',
       component: CadastroView,
 
