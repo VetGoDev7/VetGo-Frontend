@@ -9,24 +9,13 @@ import '@/assets/base.css'
       <div class="login-left">
         <h1>Bem-Vindo Ao VetGo!</h1>
 
-        <button class="google-btn">
-          <img src="/google.png"  />
-          Entre com o Google
-        </button>
-
-        <div class="separator">
-          <span> ou </span>
-        </div>
-
         <form class="login-form">
           <input type="email" placeholder="Email" />
           <input type="password" placeholder="Senha" />
           <a href="#" class="forgot-password">Esqueceu sua senha?</a>
         </form>
         <button type="submit" class="login-btn">Login</button>
-
-
-        <p class="register-text">Não tem conta? <a href="#">Cadastre-se</a></p>
+        <p class="register-text">Não tem conta? <a href="/cadastro">Cadastre-se</a></p>
       </div>
 
       <div class="login-right">
@@ -38,10 +27,10 @@ import '@/assets/base.css'
 </template>
 
 
-<style setup>
+<style scoped>
 .login-container {
   background-color: var(  --cor-fundo);
-  min-height: 100vh;
+  min-height: 75vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -71,29 +60,10 @@ import '@/assets/base.css'
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   text-align: center;
-  font-size: 50px;
-  margin-bottom: 40px;
+  font-size: 45px;
+  margin-bottom: 80px;
 }
 
-.google-btn {
-  border: var(  --borda-botao);
-  border-radius: 8px;
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 400;
-  font-size: 13 px;
-  cursor: pointer;
-  margin-bottom: 25px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.google-btn img {
-  width: 25px;
-  height: 20px;
-}
 
 .separator {
   text-align: center;
