@@ -31,7 +31,7 @@ import '@/assets/base.css'
         <img class="paw-decor2" src="/patinhas.png" />
       </div>
     </section>
-    <section class="servicos">
+    <section id="servicos" class="servicos">
       <img src="/topo.png" alt="onda topo" class="onda-topo" />
       <h2>Nossos serviços</h2>
       <div class="cards-servicos">
@@ -120,6 +120,7 @@ import '@/assets/base.css'
 </template>
 
 <style scoped>
+
 .home-view {
   width: 100%;
   display: flex;
@@ -424,5 +425,4 @@ import '@/assets/base.css'
   margin-top: 70px;
   margin-left: -95px;
 }
-
 </style>
