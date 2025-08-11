@@ -15,8 +15,7 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/',
-      name: 'sobrenos',
+      path: '/sobrenos',
       component: SobreNosView,
     },
     {
@@ -30,7 +29,7 @@ const router = createRouter({
       component: VetView,
     },
     {
-      path: '/',
+      path: '/servico',
       name: 'servico',
       component: ServicoView,
     },

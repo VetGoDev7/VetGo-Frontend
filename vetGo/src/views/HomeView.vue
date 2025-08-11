@@ -121,6 +121,7 @@ import '@/assets/base.css'
 
 <style scoped>
 .home-view {
+  
   width: 100%;
   display: flex;
   flex-direction: column;
