@@ -19,12 +19,12 @@ const router = createRouter({
       component: SobreNosView,
     },
     {
-      path:'/',
+      path:'/agenda',
       name: 'agenda',
       component: AgendaView,
     },
     {
-      path: '/',
+      path: '/vet',
       name: 'vet',
       component: VetView,
     },
@@ -34,12 +34,12 @@ const router = createRouter({
       component: ServicoView,
     },
     {
-      path: '/',
+      path: '/login',
       name: 'login',
       component: LoginView,
     },
     {
-      path:'/',
+      path:'/cadastro',
       name: 'cadastro',
       component: CadastroView,
 

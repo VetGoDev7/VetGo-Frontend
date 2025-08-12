@@ -30,7 +30,7 @@ import '@/assets/base.css'
     </div>
 
     <div class="bloco-cinza">localização</div>
-  </div>
+
 </template>
 
 <style scoped>

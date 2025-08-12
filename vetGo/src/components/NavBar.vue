@@ -1,25 +1,21 @@
 <script setup>
 import '@/assets/base.css'
-
 </script>
 
 <template>
   <nav class="navbar">
     <div class="logo">
       <router-link to="/home">
-      <img src="/logo.png" class="logo-img"/>
-       </router-link>
+        <img src="/logo.png" class="logo-img" />
+      </router-link>
     </div>
     <ul class="nav-links">
       <li><router-link to="/sobrenos">Sobre Nós</router-link></li>
       <li><router-link to="/agenda">Agendamentos</router-link></li>
       <li><router-link to="/vet">Veterinários</router-link></li>
-      <li><router-link to="/servicos">Serviços</router-link></li>
+      <li><a href="#servicos">Serviços</a></li>
       <li><router-link to="/login" class="login-button">Login</router-link></li>
       <li><router-link to="/cadastro">Cadastro</router-link></li>
-
-
-
     </ul>
   </nav>
 </template>
@@ -38,14 +34,13 @@ import '@/assets/base.css'
   width: 90%;
   max-width: 1200px;
   margin: 20px auto;
- font-family: 'Montserrat', sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .logo-img {
   height: 7em;
   object-fit: contain;
 }
-
 
 .nav-links {
   display: flex;
@@ -67,16 +62,12 @@ import '@/assets/base.css'
   background-color: #f0f0f0;
 }
 
-.nav-links a.router-link-exact-active {
-  background-color: #A7D7A7; 
-  color: #fff;
-  font-weight: bold;
-}
 .login-button {
-  background-color: var(  --cor-botao);
+  background-color: var(--cor-botao);
   border: 3px solid rgba(150, 236, 92, 0.4);
-  text-align: center;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
 }
-
 </style>
-
