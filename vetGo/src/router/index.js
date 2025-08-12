@@ -16,7 +16,6 @@ const router = createRouter({
     },
     {
       path: '/sobrenos',
-      name: 'sobrenos',
       component: SobreNosView,
     },
     {
