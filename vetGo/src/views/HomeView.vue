@@ -91,31 +91,6 @@ import '@/assets/base.css'
         </div>
       </div>
     </section>
-
-    <footer class="rodape">
-      <div class="container-footer">
-        <div class="coluna-logo">
-          <img src="/logobranca.png" class="logo-footer" />
-          <p>
-            Na VetGo, oferecemos atendimento especializado e acolhedor para cães e gatos, com uma
-            equipe dedicada ao bem-estar, saúde e felicidade dos seus companheiros de quatro patas."
-          </p>
-        </div>
-
-        <div class="coluna-links">
-          <ul>
-            <li><router-link to="/servicos">Serviços</router-link></li>
-            <li>Termos e Condições</li>
-            <li>Política de Privacidade</li>
-            <li><router-link to="/sobrenos">Sobre Nós</router-link></li>
-          </ul>
-        </div>
-
-        <div class="coluna-logo">
-          <img class="paw-decor3" src="/patinhas3.png" />
-        </div>
-      </div>
-    </footer>
   </main>
 </template>
 

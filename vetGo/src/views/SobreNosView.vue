@@ -1,5 +1,6 @@
 <script setup>
 import '@/assets/base.css'
+import FooterRodape from '@/components/FooterRodape.vue'
 </script>
 
 <template>
