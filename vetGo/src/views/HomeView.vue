@@ -62,7 +62,7 @@ import '@/assets/base.css'
       </div>
       <img src="/baixo.png" class="onda-baixo" />
     </section>
-    <section class="veterinarios">
+    <section id="veterinarios" class="veterinarios">
       <h2>Veterinários</h2>
       <div class="cards-veterinarios">
         <div class="card-vet">
