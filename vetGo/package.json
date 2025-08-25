@@ -25,5 +25,9 @@
     "prettier": "3.5.3",
     "vite": "^6.2.4",
     "vite-plugin-vue-devtools": "^7.7.7"
-  }
+  },
+  "engines": {
+  "node": "20.x"
+}
+
 }
