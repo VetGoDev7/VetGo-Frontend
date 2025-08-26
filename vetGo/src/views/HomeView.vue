@@ -122,15 +122,14 @@ import '@/assets/base.css'
 }
 
 .logo-hero {
-  width: 300px;
+  width: 270px;
   max-width: 100%;
-  margin-bottom: 0;
-  z-index: 2;
+  margin-top: -35px;
 }
 
 .pets-banner {
   width: 100%;
-  max-width: 800px;
+  max-width: 600px;
   height: auto;
   position: absolute;
   bottom: 0;
@@ -146,12 +145,12 @@ import '@/assets/base.css'
 }
 
 .paw-decor.left {
-  top: 25%;
+  top: 13%;
   left: 10%;
 }
 
 .paw-decor.right {
-  top: 25%;
+  top: 13%;
   right: 10%;
 }
 
@@ -203,7 +202,6 @@ import '@/assets/base.css'
 .paw-decor2 {
   height: auto;
   margin-left: 20px;
-  align-self: flex-start;
 }
 
 .servicos {
@@ -212,7 +210,7 @@ import '@/assets/base.css'
   padding: 140px 20px 100px;
   margin-top: 150px;
   width: 100vw;
-  height: 50vw;
+  height: 65vw;
   text-align: center;
   overflow: hidden;
 }
