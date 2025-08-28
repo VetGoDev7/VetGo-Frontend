@@ -225,7 +225,7 @@ import '@/assets/base.css'
 
 .onda-baixo {
   position: absolute;
-  bottom: 0;
+  bottom: 17px;
   margin-bottom: -60px;
   left: 0;
   width: 100%;
@@ -240,10 +240,10 @@ import '@/assets/base.css'
 .cards-servicos {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  gap: 50px;
   max-width: 1000px;
   margin: 40px auto 0;
-  padding: 20px;
+  padding: 10px;
 }
 
 .cards-servicos,
@@ -253,7 +253,7 @@ import '@/assets/base.css'
 }
 .card {
   background: white;
-  padding: 30px 20px;
+  padding: 50px 50px;
   border-radius: 20px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
@@ -264,8 +264,8 @@ import '@/assets/base.css'
   transform: scale(1.05);
 }
 .card img {
-  width: 60px;
-  height: 60px;
+  width: 55px;
+  height: 55px;
   margin-bottom: 15px;
 }
 .card p {
@@ -399,4 +399,5 @@ import '@/assets/base.css'
   margin-top: 70px;
   margin-left: -95px;
 }
+
 </style>

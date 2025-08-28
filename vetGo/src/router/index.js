@@ -6,7 +6,7 @@ import VetView from '@/views/VetView.vue'
 import ServicoView from '@/views/ServicoView.vue'
 import LoginView from '@/views/LoginView.vue'
 import CadastroView from '@/views/CadastroView.vue'
-  
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,7 +20,7 @@ const router = createRouter({
       component: SobreNosView,
     },
     {
-      path:'/agenda',
+      path: '/agenda',
       name: 'agenda',
       component: AgendaView,
     },
@@ -40,22 +40,20 @@ const router = createRouter({
       component: LoginView,
     },
     {
-      path:'/cadastro',
+      path: '/cadastro',
       name: 'cadastro',
       component: CadastroView,
-
-    }
-
+    },
   ],
-    scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
       return {
         el: to.hash,
-        behavior: 'smooth'
+        behavior: 'smooth',
       }
     }
     return { top: 0 }
-  }
+  },
 })
 
 export default router
