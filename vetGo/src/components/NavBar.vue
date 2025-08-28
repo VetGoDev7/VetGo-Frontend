@@ -12,7 +12,7 @@ import '@/assets/base.css'
     <ul class="nav-links">
       <li><router-link to="/sobrenos">Sobre Nós</router-link></li>
       <li><router-link to="/agenda">Agendamentos</router-link></li>
-      <li><router-link to="/vet">Veterinários</router-link></li>
+      <li><a href="#veterinarios">Veterinários</a></li>
       <li><a href="#servicos">Serviços</a></li>
       <li><router-link to="/login" class="login-button">Login</router-link></li>
       <li><router-link to="/cadastro">Cadastro</router-link></li>
