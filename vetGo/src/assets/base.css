@@ -1,0 +1,24 @@
+/* color palette from <https://github.com/vuejs/theme> */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+
+:root {
+  --cor-fundo: #EAEAEA;
+  --verde-claro: #94C38F;
+  --cor-botao:#7BA65D;
+  --borda-botao:#FFFDFD;
+ 
+}
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+  html {
+      scroll-behavior: smooth;
+    }
+body{
+    background-color: var(--cor-fundo);
+}
