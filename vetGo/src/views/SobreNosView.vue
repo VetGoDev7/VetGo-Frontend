@@ -1,5 +1,6 @@
 <script setup>
 import '@/assets/base.css'
+import FooterRodape from '@/components/FooterRodape.vue';
 </script>
 
 <template>
@@ -31,6 +32,7 @@ import '@/assets/base.css'
 
     <div class="bloco-cinza">localização</div>
   </div>
+  <FooterRodape />
 </template>
 
 <style scoped>
