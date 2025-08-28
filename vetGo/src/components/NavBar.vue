@@ -12,8 +12,8 @@ import '@/assets/base.css'
     <ul class="nav-links">
       <li><router-link to="/sobrenos">Sobre Nós</router-link></li>
       <li><router-link to="/agenda">Agendamentos</router-link></li>
-      <li><a href="#veterinarios">Veterinários</a></li>
-      <li><a href="#servicos">Serviços</a></li>
+      <li><router-link :to="{path: '/home', hash: '#veterinarios'}">Veterinários</router-link></li>
+      <li><router-link :to="{ path: '/home', hash: '#servicos' }">Serviços</router-link></li>
       <li><router-link to="/login" class="login-button">Login</router-link></li>
       <li><router-link to="/cadastro">Cadastro</router-link></li>
     </ul>
@@ -21,7 +21,6 @@ import '@/assets/base.css'
 </template>
 
 <style scoped>
-
 .navbar {
   display: flex;
   justify-content: space-between;
