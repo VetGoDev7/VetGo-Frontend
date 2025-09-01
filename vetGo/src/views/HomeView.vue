@@ -107,6 +107,7 @@ import '@/assets/base.css'
   justify-content: center;
   position: relative;
   overflow: hidden;
+
 }
 
 .hero {
@@ -125,7 +126,7 @@ import '@/assets/base.css'
 
 .logo-hero {
   width: 300px;
-  max-width: 100%;
+  max-width: 75%;
   margin-bottom: 0;
   z-index: 2;
 }
@@ -214,7 +215,7 @@ import '@/assets/base.css'
   padding: 140px 20px 100px;
   margin-top: 150px;
   width: 100vw;
-  height: 50vw;
+  height: 60vw;
   text-align: center;
   overflow: hidden;
 }
@@ -280,7 +281,7 @@ import '@/assets/base.css'
 }
 
 .veterinarios {
-  padding-top: 80px;
+  padding-top: 150px;
   padding-bottom: 3rem;
   text-align: center;
   position: relative;

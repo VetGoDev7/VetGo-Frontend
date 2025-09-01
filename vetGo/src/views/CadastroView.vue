@@ -46,7 +46,7 @@ import '@/assets/base.css'
 
 <style scoped>
 .cadastro-tutor {
-  padding: 40px 20px;
+  padding: 20px 20px;
   font-family: 'Arial', sans-serif;
   min-height: 100vh;
 }
