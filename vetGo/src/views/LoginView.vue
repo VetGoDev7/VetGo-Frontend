@@ -30,6 +30,7 @@ import '@/assets/base.css'
 <style scoped>
 .login-container {
   background-color: var(  --cor-fundo);
+  padding: 20px 20px;
   min-height: 75vh;
   display: flex;
   justify-content: center;
@@ -42,13 +43,13 @@ import '@/assets/base.css'
   border-radius: 20px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  width: 900px;
+  width: 800px;
   max-width: 95%;
 }
 
 .login-left {
   background-color: var( --verde-claro);
-  padding: 50px 40px;
+  padding: 30px 40px;
   width: 50%;
   display: flex;
   flex-direction: column;
