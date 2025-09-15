@@ -15,7 +15,8 @@ import '@/assets/base.css'
         <div class="input-grid">
           <input type="text" placeholder="Nome Completo" />
           <input type="email" placeholder="E-mail" />
-          <input type="tel"  class="fone" placeholder="Telefone" />
+          <input type="senha"   placeholder="Senha" />
+          <input type="confirmar"  placeholder="Confirmar Senha" />
         </div>
       </div>
 
@@ -93,12 +94,6 @@ import '@/assets/base.css'
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
 }
-.fone {
-  grid-column: 1 / -1; 
-  justify-self: center; 
-  width: 50%; 
-}
-
 input,
 textarea {
   padding: 12px;
