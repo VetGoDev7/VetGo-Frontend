@@ -113,8 +113,7 @@
   }
 
   .paw-decor3 {
-    margin: 40px auto 0;
-    margin-left: 0;
+    display: none;
   }
 }
 
@@ -132,7 +131,7 @@
   }
 
   .paw-decor3 {
-    max-width: 90px;
+    display: none;
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <script setup>
-import FooterRodape from '@/components/FooterRodape.vue';
+import FooterRodape from '@/components/FooterRodape.vue'
 import '@/assets/base.css'
 </script>
 
@@ -92,12 +92,11 @@ import '@/assets/base.css'
         </div>
       </div>
     </section>
-     <FooterRodape />
+    <FooterRodape />
   </main>
 </template>
 
 <style scoped>
-
 .home-view {
   width: 100%;
   display: flex;
@@ -358,8 +357,9 @@ import '@/assets/base.css'
 
 @media (max-width: 768px) {
   .hero {
+    
     height: auto;
-    padding: 40px 10px;
+    padding: 0px 10px;
   }
 
   .logo-hero {
@@ -367,6 +367,7 @@ import '@/assets/base.css'
   }
 
   .pets-banner {
+
     position: static;
     transform: none;
     margin-top: 20px;
@@ -379,7 +380,16 @@ import '@/assets/base.css'
   .dog-image {
     width: 180px;
   }
+  .paw-decor.left {
+    display: none;
+  }
+  .paw-decor.right {
+    display: none;
+  }
+  .paw-decor2{
+    display: none;
 
+  }
   .text-content h1 {
     font-size: 1.8rem;
   }
@@ -407,6 +417,3 @@ import '@/assets/base.css'
   }
 }
 </style>
-
-
-
