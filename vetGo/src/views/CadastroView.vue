@@ -1,22 +1,98 @@
 <script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
 import '@/assets/base.css'
+
+const nome_completo = ref('')
+const email = ref('')
+const senha = ref('')
+const confirmar_senha = ref('')
+const nome_pet = ref('')
+const especie = ref('')
+const raca = ref('')
+const idade = ref('')
+const observacao = ref('')
+const mensagem = ref('')
+const router = useRouter()
+
+async function cadastrar() {
+  mensagem.value = ''
+
+  if (!nome_completo.value || !email.value || !senha.value || !confirmar_senha.value) {
+    mensagem.value = 'Preencha todos os campos do tutor.'
+    return
+  }
+
+  if (!nome_pet.value || !especie.value || !raca.value || !idade.value) {
+    mensagem.value = 'Preencha todos os campos do pet.'
+    return
+  }
+
+  if (!email.value.includes('@')) {
+    mensagem.value = 'Email inválido.'
+    return
+  }
+
+  if (senha.value.length < 8) {
+    mensagem.value = 'A senha deve ter pelo menos 8 caracteres.'
+    return
+  }
+
+  if (senha.value !== confirmar_senha.value) {
+    mensagem.value = 'As senhas não conferem.'
+    return
+  }
+  try {
+    const tutorResponse = await axios.post('http://127.0.0.1:19003/api/tutores/', {
+      nome_completo: nome_completo.value,
+      email: email.value,
+      senha: senha.value,
+      confirmar_senha: confirmar_senha.value,
+    })
+
+    const tutor = tutorResponse.data
+
+    console.log('idade antes do envio:', idade.value, typeof idade.value)
+
+    await axios.post('http://127.0.0.1:19003/api/pets/', {
+      nome: nome_pet.value,
+      especie: especie.value,
+      raca: raca.value,
+      idade: idade.value,
+      observacao: observacao.value,
+      tutor: tutor.id,
+    })
+
+    mensagem.value = 'Cadastro realizado com sucesso!'
+    setTimeout(() => {
+      router.push('/login')
+    }, 1500)
+  } catch (err) {
+    if (err.response) {
+      mensagem.value = 'Erro no cadastro: ' + JSON.stringify(err.response.data)
+    } else {
+      mensagem.value = 'Erro de conexão com o servidor.'
+    }
+  }
+}
+
 </script>
 
 <template>
   <section class="cadastro-tutor">
     <h1>Informações de Cadastro</h1>
-
-    <form class="form-container">
+    <form class="form-container" @submit.prevent="cadastrar">
       <div class="form-section">
         <div class="section-header">
           <img src="/usuario.png" />
           <h2>Informações Pessoais</h2>
         </div>
         <div class="input-grid">
-          <input type="text" placeholder="Nome Completo" />
-          <input type="email" placeholder="E-mail" />
-          <input type="senha"   placeholder="Senha" />
-          <input type="confirmar"  placeholder="Confirmar Senha" />
+          <input v-model="nome_completo" required placeholder="Nome Completo" />
+          <input v-model="email" type="email" placeholder="E-mail" />
+          <input v-model="senha" type="password" placeholder="Crie uma senha" />
+          <input v-model="confirmar_senha" type="password" placeholder="Confirmar Senha" />
         </div>
       </div>
 
@@ -26,20 +102,22 @@ import '@/assets/base.css'
           <h2>Informações do Pet</h2>
         </div>
         <div class="input-grid">
-          <input type="text" placeholder="Nome Do Animal" />
-          <div class="radio-group">
-            <label><input type="radio" name="especie" value="cachorro" /> Cachorro</label>
-            <label><input type="radio" name="especie" value="gato" /> Gato</label>
-          </div>
-          <input type="text" placeholder="Raça" />
-          <input type="number" placeholder="Idade" />
+          <input v-model="nome_pet" placeholder="Nome do Animal" />
+          <select v-model="especie">
+            <option disabled value="">Selecione a espécie</option>
+            <option value="cachorro">Cachorro</option>
+            <option value="gato">Gato</option>
+          </select>
+          <input v-model="raca" type="text" placeholder="Raça" />
+          <input type="number" v-model.number="idade" placeholder="Idade" />
         </div>
-        <textarea placeholder="Observações importantes"></textarea>
+        <textarea v-model="observacao" placeholder="Observações importantes"></textarea>
       </div>
 
       <div class="form-buttons">
         <a href="/home" class="voltar">&lt; Voltar</a>
         <button type="submit" class="btn-cadastrar">Cadastrar</button>
+        <p v-if="mensagem" class="mensagem">{{ mensagem }}</p>
       </div>
     </form>
   </section>
@@ -79,7 +157,7 @@ import '@/assets/base.css'
   gap: 10px;
   margin-bottom: 20px;
 }
-.section-header h2{
+.section-header h2 {
   font-family: 'Montserrat', sans-serif;
   font-weight: 400;
 }
@@ -110,16 +188,35 @@ textarea {
   resize: vertical;
   height: 80px;
 }
-
-.radio-group {
-  display: flex;
-  gap: 20px;
-  align-items: center;
+select {
+  padding: 12px;
+  border: 2px solid #94c38f; 
+  border-radius: 8px; 
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  background: #fff;
+  cursor: pointer;
+  transition: 0.3s ease;
 }
 
-.radio-group label {
-  font-size: 16px;
-  color: #333;
+select option[disabled] {
+  color: #999;
+}
+
+select:focus {
+  border-color: #7cab75;
+  outline: none;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6"><path fill="%2394c38f" d="M0 0l5 6 5-6z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 10px 6px;
 }
 
 .form-buttons {
