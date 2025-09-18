@@ -16,12 +16,11 @@ async function login() {
       senha: senha.value
     })
 
-    // Armazenar tokens
     localStorage.setItem('access_token', res.data.access)
     localStorage.setItem('refresh_token', res.data.refresh)
 
     alert(`Bem-vindo, ${res.data.tutor.nome_completo}!`)
-    router.push('/') // redireciona para página inicial
+    router.push('/') 
   } catch (e) {
     erro.value = e.response?.data?.erro || 'Erro ao fazer login'
   }
