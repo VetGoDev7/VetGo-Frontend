@@ -8,108 +8,70 @@ const nome_completo = ref('')
 const email = ref('')
 const senha = ref('')
 const confirmar_senha = ref('')
-const mensagem = ref('')
-const router = useRouter()
 const nome_pet = ref('')
 const especie = ref('')
 const raca = ref('')
 const idade = ref('')
-const obs = ref('')
+const observacao = ref('')
+const mensagem = ref('')
+const router = useRouter()
 
 async function cadastrar() {
-  alert.value = ''
+  mensagem.value = ''
 
   if (!nome_completo.value || !email.value || !senha.value || !confirmar_senha.value) {
-    alert.value = 'Preencha todos os campos do tutor.'
+    mensagem.value = 'Preencha todos os campos do tutor.'
     return
   }
 
   if (!nome_pet.value || !especie.value || !raca.value || !idade.value) {
-    alert.value = 'Preencha todos os campos do pet.'
+    mensagem.value = 'Preencha todos os campos do pet.'
     return
   }
 
   if (!email.value.includes('@')) {
-    alert.value = 'Email inválido.'
+    mensagem.value = 'Email inválido.'
     return
   }
 
   if (senha.value.length < 8) {
-    alert.value = 'A senha deve ter pelo menos 8 caracteres.'
+    mensagem.value = 'A senha deve ter pelo menos 8 caracteres.'
     return
   }
 
   if (senha.value !== confirmar_senha.value) {
-    alert.value = 'As senhas não conferem.'
+    mensagem.value = 'As senhas não conferem.'
     return
   }
-
   try {
-    const usuario = {
-      id: Date.now(),
+    const tutorResponse = await axios.post('http://127.0.0.1:19003/api/tutores/', {
       nome_completo: nome_completo.value,
       email: email.value,
       senha: senha.value,
-      dataCadastro: new Date().toISOString(),
-    }
-    const pet = {
-      id: Date.now() + 1,
-      nome_pet: nome_pet.value,
+      confirmar_senha: confirmar_senha.value,
+    })
+
+    const tutor = tutorResponse.data
+
+    console.log('idade antes do envio:', idade.value, typeof idade.value)
+
+    await axios.post('http://127.0.0.1:19003/api/pets/', {
+      nome: nome_pet.value,
       especie: especie.value,
       raca: raca.value,
       idade: idade.value,
-      obs: obs.value,
-      tutorEmail: email.value, 
-    }
-    
+      observacao: observacao.value,
+      tutor: tutor.id,
+    })
 
-await axios.post('http://127.0.0.1:19003/api/tutores/', usuario)   
- await axios.post('http://127.0.0.1:19003/api/pets/', pet)
-
-    const usuariosExistentes = JSON.parse(localStorage.getItem('usuarios') || '[]')
-    const petsExistentes = JSON.parse(localStorage.getItem('pets') || '[]')
-
-    const emailJaExiste = usuariosExistentes.find((user) => user.email === email.value)
-    if (emailJaExiste) {
-      alert.value = 'Este email já está cadastrado!'
-      return
-    }
-
-    usuariosExistentes.push(usuario)
-    localStorage.setItem('usuarios', JSON.stringify(usuariosExistentes))
-
-    petsExistentes.push(pet)
-    localStorage.setItem('pets', JSON.stringify(petsExistentes))
-
-    alert.value = 'Cadastro realizado com sucesso!'
-    nome_completo.value =
-      email.value =
-      senha.value =
-        setTimeout(() => {
-          router.push('/login')
-        }, 1200)
-  } catch (err) {
-    alert.value = err.message || 'Erro ao cadastrar. Tente novamente.'
-  }
-
-
-  const u = {
-    nome_completo: nome_completo.value,
-    email: email.value,
-    senha: senha.value,
-    confirmar_senha: confirmar_senha.value
-  }
-
-  try {
-    const response = await axios.post('http://127.0.0.1:19003/api/tutores/', u)
     mensagem.value = 'Cadastro realizado com sucesso!'
-    console.log('Resposta do servidor:', response.data)
+    setTimeout(() => {
+      router.push('/login')
+    }, 1500)
   } catch (err) {
     if (err.response) {
-      console.error('Erro do Django:', err.response.data)
       mensagem.value = 'Erro no cadastro: ' + JSON.stringify(err.response.data)
     } else {
-      console.error('Erro inesperado:', err)
       mensagem.value = 'Erro de conexão com o servidor.'
     }
   }
@@ -127,9 +89,9 @@ await axios.post('http://127.0.0.1:19003/api/tutores/', usuario)
           <h2>Informações Pessoais</h2>
         </div>
         <div class="input-grid">
-          <input id="nome" v-model="nome_completo" required placeholder="Nome" />
-          <input id="email" v-model="email" type="email" placeholder="E-mail" />
-          <input id="senha" v-model="senha" type="password" placeholder="Crie uma senha" />
+          <input v-model="nome_completo" required placeholder="Nome Completo" />
+          <input v-model="email" type="email" placeholder="E-mail" />
+          <input v-model="senha" type="password" placeholder="Crie uma senha" />
           <input v-model="confirmar_senha" type="password" placeholder="Confirmar Senha" />
         </div>
       </div>
@@ -140,19 +102,22 @@ await axios.post('http://127.0.0.1:19003/api/tutores/', usuario)
           <h2>Informações do Pet</h2>
         </div>
         <div class="input-grid">
-          <input id="nome_pet" v-model="nome_pet" placeholder="Nome Do Animal" />
-          <div class="radio-group" id="especie">
-            <label><input type="radio" v-model="especie" value="cachorro" /> Cachorro</label>
-            <label><input type="radio" name="especie" value="gato" /> Gato</label>
-          </div>
-          <input id="raca" v-model="raca" type="text" placeholder="Raça" />
-          <input id="idade" v-model="idade" type="number" placeholder="Idade" />
+          <input v-model="nome_pet" placeholder="Nome do Animal" />
+          <select v-model="especie">
+            <option disabled value="">Selecione a espécie</option>
+            <option value="cachorro">Cachorro</option>
+            <option value="gato">Gato</option>
+          </select>
+          <input v-model="raca" type="text" placeholder="Raça" />
+          <input type="number" v-model.number="idade" placeholder="Idade" />
         </div>
-        <textarea id="obs" v-model="obs" placeholder="Observações importantes"></textarea>
+        <textarea v-model="observacao" placeholder="Observações importantes"></textarea>
       </div>
+
       <div class="form-buttons">
         <a href="/home" class="voltar">&lt; Voltar</a>
-        <button type="submit" class="btn-cadastrar"></button>
+        <button type="submit" class="btn-cadastrar">Cadastrar</button>
+        <p v-if="mensagem" class="mensagem">{{ mensagem }}</p>
       </div>
     </form>
   </section>
@@ -223,16 +188,35 @@ textarea {
   resize: vertical;
   height: 80px;
 }
-
-.radio-group {
-  display: flex;
-  gap: 20px;
-  align-items: center;
+select {
+  padding: 12px;
+  border: 2px solid #94c38f; 
+  border-radius: 8px; 
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  background: #fff;
+  cursor: pointer;
+  transition: 0.3s ease;
 }
 
-.radio-group label {
-  font-size: 16px;
-  color: #333;
+select option[disabled] {
+  color: #999;
+}
+
+select:focus {
+  border-color: #7cab75;
+  outline: none;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6"><path fill="%2394c38f" d="M0 0l5 6 5-6z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 10px 6px;
 }
 
 .form-buttons {
