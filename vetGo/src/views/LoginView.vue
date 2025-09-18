@@ -11,10 +11,13 @@ const erro = ref('')
 async function login() {
   erro.value = ''
   try {
-    const res = await axios.post('http://127.0.0.1:19003/api/login/', {
-      email: email.value,
-      senha: senha.value
-    })
+const api = import.meta.env.VITE_API_URL
+
+const res = await axios.post(`${api}/login/`, {
+  email: email.value,
+  senha: senha.value
+})
+    
 
     localStorage.setItem('access_token', res.data.access)
     localStorage.setItem('refresh_token', res.data.refresh)
