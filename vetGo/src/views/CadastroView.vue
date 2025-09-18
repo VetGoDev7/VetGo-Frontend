@@ -44,7 +44,9 @@ async function cadastrar() {
     return
   }
   try {
-    const tutorResponse = await axios.post('http://127.0.0.1:19003/api/tutores/', {
+    const api = import.meta.env.VITE_API_URL
+    
+    const tutorResponse = await axios.post(`${api}/tutores/`, tutor, {
       nome_completo: nome_completo.value,
       email: email.value,
       senha: senha.value,
@@ -55,14 +57,15 @@ async function cadastrar() {
 
     console.log('idade antes do envio:', idade.value, typeof idade.value)
 
-    await axios.post('http://127.0.0.1:19003/api/pets/', {
-      nome: nome_pet.value,
-      especie: especie.value,
-      raca: raca.value,
-      idade: idade.value,
-      observacao: observacao.value,
-      tutor: tutor.id,
-    })
+   await axios.post(`${api}/pets/`, {
+  nome: nome_pet.value,
+  especie: especie.value,
+  raca: raca.value,
+  idade: idade.value,
+  observacao: observacao.value
+}, {
+  headers: { 'Content-Type': 'application/json' }
+})
 
     mensagem.value = 'Cadastro realizado com sucesso!'
     setTimeout(() => {
