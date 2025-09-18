@@ -1,5 +1,31 @@
 <script setup>
-import '@/assets/base.css'
+import { ref } from 'vue'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const email = ref('')
+const senha = ref('')
+const erro = ref('')
+
+async function login() {
+  erro.value = ''
+  try {
+    const res = await axios.post('http://127.0.0.1:19003/api/login/', {
+      email: email.value,
+      senha: senha.value
+    })
+
+    // Armazenar tokens
+    localStorage.setItem('access_token', res.data.access)
+    localStorage.setItem('refresh_token', res.data.refresh)
+
+    alert(`Bem-vindo, ${res.data.tutor.nome_completo}!`)
+    router.push('/') // redireciona para página inicial
+  } catch (e) {
+    erro.value = e.response?.data?.erro || 'Erro ao fazer login'
+  }
+}
 </script>
 
 <template>
@@ -9,13 +35,15 @@ import '@/assets/base.css'
       <div class="login-left">
         <h1>Bem-Vindo Ao VetGo!</h1>
 
-        <form class="login-form">
-          <input type="email" placeholder="Email" />
-          <input type="password" placeholder="Senha" />
+        <form @submit.prevent="login" class="login-form">
+          <input type="email" placeholder="Email" v-model="email" required />
+          <input type="password" placeholder="Senha" v-model="senha" required />
           <a href="#" class="forgot-password">Esqueceu sua senha?</a>
+          <button type="submit" class="login-btn">Login</button>
         </form>
-        <button type="submit" class="login-btn">Login</button>
+
         <p class="register-text">Não tem conta? <a href="/cadastro">Cadastre-se</a></p>
+        <p v-if="erro" style="color:red; margin-top:10px">{{ erro }}</p>
       </div>
 
       <div class="login-right">
@@ -25,7 +53,6 @@ import '@/assets/base.css'
     </div>
   </section>
 </template>
-
 
 <style scoped>
 .login-container {
