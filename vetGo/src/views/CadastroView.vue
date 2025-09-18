@@ -125,9 +125,12 @@ async function cadastrar() {
 
 <style scoped>
 .cadastro-tutor {
-  padding: 20px 20px;
+  padding: 20px;
   font-family: 'Arial', sans-serif;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .cadastro-tutor h1 {
@@ -157,23 +160,27 @@ async function cadastrar() {
   gap: 10px;
   margin-bottom: 20px;
 }
+
 .section-header h2 {
   font-family: 'Montserrat', sans-serif;
   font-weight: 400;
+  font-size: 20px;
 }
 
 .section-header img {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
 }
 
 .input-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
 }
+
 input,
-textarea {
+textarea,
+select {
   padding: 12px;
   border: 2px solid #94c38f;
   border-radius: 8px;
@@ -188,26 +195,6 @@ textarea {
   resize: vertical;
   height: 80px;
 }
-select {
-  padding: 12px;
-  border: 2px solid #94c38f; 
-  border-radius: 8px; 
-  font-size: 16px;
-  width: 100%;
-  box-sizing: border-box;
-  background: #fff;
-  cursor: pointer;
-  transition: 0.3s ease;
-}
-
-select option[disabled] {
-  color: #999;
-}
-
-select:focus {
-  border-color: #7cab75;
-  outline: none;
-}
 
 select {
   -webkit-appearance: none;
@@ -217,6 +204,19 @@ select {
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 10px 6px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+select option[disabled] {
+  color: #999;
+}
+
+select:focus,
+input:focus,
+textarea:focus {
+  border-color: #7cab75;
+  outline: none;
 }
 
 .form-buttons {
@@ -224,6 +224,7 @@ select {
   justify-content: space-between;
   align-items: center;
   margin-top: 30px;
+  gap: 10px;
 }
 
 .voltar {
@@ -247,4 +248,104 @@ select {
 .btn-cadastrar:hover {
   background-color: #7cab75;
 }
+
+
+@media (max-width: 480px) {
+  .cadastro-tutor h1 {
+    font-size: 22px;
+    margin-bottom: 25px;
+  }
+
+  .form-container {
+    padding: 15px;
+    border-radius: 12px;
+  }
+
+  .section-header h2 {
+    font-size: 16px;
+  }
+
+  .section-header img {
+    width: 22px;
+    height: 22px;
+  }
+
+  .input-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  input,
+  textarea,
+  select {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .form-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-cadastrar {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .voltar {
+    text-align: center;
+    font-size: 14px;
+  }
+}
+
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .cadastro-tutor h1 {
+    font-size: 26px;
+    margin-bottom: 30px;
+  }
+
+  .form-container {
+    padding: 20px;
+  }
+
+  .section-header h2 {
+    font-size: 18px;
+  }
+
+  .input-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .form-buttons {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .btn-cadastrar {
+    padding: 10px 20px;
+    font-size: 15px;
+  }
+}
+
+/* ============================= */
+/* 💻 DESKTOP (a partir de 769px)*/
+/* ============================= */
+@media (min-width: 769px) {
+  .cadastro-tutor h1 {
+    font-size: 32px;
+  }
+
+  .form-container {
+    padding: 30px;
+  }
+
+  .input-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
 </style>

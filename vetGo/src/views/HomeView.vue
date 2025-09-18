@@ -99,7 +99,6 @@ import '@/assets/base.css'
 <style scoped>
 
 .home-view {
-  
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -107,7 +106,6 @@ import '@/assets/base.css'
   justify-content: center;
   position: relative;
   overflow: hidden;
-
 }
 
 .hero {
@@ -127,7 +125,6 @@ import '@/assets/base.css'
 .logo-hero {
   width: 300px;
   max-width: 75%;
-  margin-bottom: 0;
   z-index: 2;
 }
 
@@ -190,7 +187,6 @@ import '@/assets/base.css'
   font-size: 2.5rem;
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
-  font-weight: bold;
   margin-bottom: 16px;
   line-height: 1.3;
 }
@@ -214,8 +210,7 @@ import '@/assets/base.css'
   background-color: var(--verde-claro);
   padding: 140px 20px 100px;
   margin-top: 150px;
-  width: 100vw;
-  height: 60vw;
+  width: 100%;
   text-align: center;
   overflow: hidden;
 }
@@ -224,7 +219,7 @@ import '@/assets/base.css'
   position: absolute;
   top: -2px;
   left: 0;
-  width: 100vw;
+  width: 100%;
   z-index: 1;
 }
 
@@ -236,12 +231,14 @@ import '@/assets/base.css'
   width: 100%;
   z-index: 1;
 }
+
 .servicos h2 {
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   font-size: 3rem;
   margin-bottom: 20px;
 }
+
 .cards-servicos {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -256,6 +253,7 @@ import '@/assets/base.css'
   position: relative;
   z-index: 2;
 }
+
 .card {
   background: white;
   padding: 30px 20px;
@@ -268,11 +266,13 @@ import '@/assets/base.css'
 .card:hover {
   transform: scale(1.05);
 }
+
 .card img {
   width: 60px;
   height: 60px;
   margin-bottom: 15px;
 }
+
 .card p {
   font-weight: 500;
   font-size: 1.2rem;
@@ -326,11 +326,87 @@ import '@/assets/base.css'
 
 .card-vet p {
   font-weight: 500;
-  font-size: 1.2rem;
-  color: #222;
   font-size: 1rem;
+  color: #222;
   font-family: 'Montserrat', sans-serif;
 }
 
+@media (max-width: 1024px) {
+  .hero-text {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
 
+  .dog-image {
+    width: 220px;
+  }
+
+  .text-content h1 {
+    font-size: 2rem;
+  }
+
+  .cards-servicos {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .cards-veterinarios {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    height: auto;
+    padding: 40px 10px;
+  }
+
+  .logo-hero {
+    width: 200px;
+  }
+
+  .pets-banner {
+    position: static;
+    transform: none;
+    margin-top: 20px;
+  }
+
+  .intro-section {
+    padding: 40px 15px;
+  }
+
+  .dog-image {
+    width: 180px;
+  }
+
+  .text-content h1 {
+    font-size: 1.8rem;
+  }
+
+  .text-content p {
+    font-size: 1rem;
+  }
+
+  .servicos h2,
+  .veterinarios h2 {
+    font-size: 2rem;
+  }
+
+  .cards-servicos {
+    grid-template-columns: 1fr;
+  }
+
+  .cards-veterinarios {
+    grid-template-columns: 1fr;
+  }
+
+  .card-vet {
+    width: 90%;
+    height: auto;
+  }
+}
 </style>
+
+
+

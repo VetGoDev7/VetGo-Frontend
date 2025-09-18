@@ -124,15 +124,22 @@ async function login() {
   display: inline-block;
 }
 
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
 .login-btn {
   background-color: var(--cor-botao);
+  align-items: center;
   border: 2px solid rgba(255, 255, 255, 0.603);
-  color: var( --cor-fundo);
+  color: var(--cor-fundo);
   font-size: 16px;
   padding: 10px 20px;
   border-radius: 30px;
   cursor: pointer;
   transition: 0.3s ease;
+
 }
 
 .login-btn:hover {
@@ -161,4 +168,62 @@ async function login() {
 }
 
 
+@media (max-width: 1024px) {
+  .login-card {
+    flex-direction: column;
+    width: 90%;
+    max-width: 600px;
+  }
+
+  .login-left {
+    width: 100%;
+    padding: 30px;
+  }
+
+  .login-left h1 {
+    font-size: 36px;
+    margin-bottom: 50px;
+  }
+
+  .login-right {
+    display: none;
+   
+  }
+
+  .login-right img {
+    height: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-card {
+    flex-direction: column;
+    width: 100%;
+    max-width: 450px;
+  }
+
+  .login-left {
+    width: 100%;
+    padding: 25px;
+  }
+
+  .login-left h1 {
+    font-size: 28px;
+    margin-bottom: 30px;
+  }
+
+  .login-right {
+    display: none; 
+
+  .login-form input {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .login-btn {
+    width: 100%;
+    font-size: 15px;
+  }
+}
+}
 </style>
