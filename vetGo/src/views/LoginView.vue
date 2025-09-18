@@ -225,4 +225,5 @@ async function login() {
     font-size: 15px;
   }
 }
+}
 </style>
