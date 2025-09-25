@@ -44,9 +44,7 @@ async function cadastrar() {
     return
   }
   try {
-    const api = import.meta.env.VITE_API_URL
-    
-    const tutorResponse = await axios.post(`${api}/tutores/`, tutor, {
+    const tutorResponse = await axios.post('http://127.0.0.1:19003/api/tutores/', {
       nome_completo: nome_completo.value,
       email: email.value,
       senha: senha.value,
@@ -57,30 +55,26 @@ async function cadastrar() {
 
     console.log('idade antes do envio:', idade.value, typeof idade.value)
 
-   await axios.post(`${api}/pets/`, {
-  nome: nome_pet.value,
-  especie: especie.value,
-  raca: raca.value,
-  idade: idade.value,
-  observacao: observacao.value
-}, {
-  headers: { 'Content-Type': 'application/json' }
-})
+    await axios.post('http://127.0.0.1:19003/api/pets/', {
+      nome: nome_pet.value,
+      especie: especie.value,
+      raca: raca.value,
+      idade: idade.value,
+      observacao: observacao.value,
+      tutor: tutor.id,
+    })
 
     mensagem.value = 'Cadastro realizado com sucesso!'
     setTimeout(() => {
       router.push('/login')
     }, 1500)
- } catch (err) {
-  if (err.response && err.response.data) {
-    if (err.response.data.email) {
-      mensagem.value = err.response.data.email[0]
-      mensagem.value = 'Erro no cadastro. Verifique os dados.'
+  } catch (err) {
+    if (err.response) {
+      mensagem.value = 'Este email já está cadastrado.' 
+    } else {
+      mensagem.value = 'Erro de conexão com o servidor.'
     }
-  } else {
-    mensagem.value = 'Erro de conexão com o servidor.'
   }
-}
 }
 
 </script>
@@ -255,7 +249,6 @@ textarea:focus {
   background-color: #7cab75;
 }
 
-
 @media (max-width: 480px) {
   .cadastro-tutor h1 {
     font-size: 22px;
@@ -305,7 +298,6 @@ textarea:focus {
   }
 }
 
-
 @media (min-width: 481px) and (max-width: 768px) {
   .cadastro-tutor h1 {
     font-size: 26px;
@@ -353,5 +345,4 @@ textarea:focus {
     gap: 20px;
   }
 }
-
 </style>
