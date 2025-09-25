@@ -71,13 +71,16 @@ async function cadastrar() {
     setTimeout(() => {
       router.push('/login')
     }, 1500)
-  } catch (err) {
-    if (err.response) {
-      mensagem.value = 'Erro no cadastro: ' + JSON.stringify(err.response.data)
-    } else {
-      mensagem.value = 'Erro de conexão com o servidor.'
+ } catch (err) {
+  if (err.response && err.response.data) {
+    if (err.response.data.email) {
+      mensagem.value = err.response.data.email[0]
+      mensagem.value = 'Erro no cadastro. Verifique os dados.'
     }
+  } else {
+    mensagem.value = 'Erro de conexão com o servidor.'
   }
+}
 }
 
 </script>
