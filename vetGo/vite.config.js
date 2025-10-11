@@ -29,7 +29,7 @@ export default defineConfig({
             purpose: 'maskable',
           },
         ],
-        id: 'com.vet.go.app',
+        id: 'com.vet-go.app',
         orientation: 'any',
         background_color: '#ffffff',
         start_url: '.',
