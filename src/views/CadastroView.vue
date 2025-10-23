@@ -115,7 +115,7 @@ async function cadastrar() {
       </div>
 
       <div class="form-buttons">
-        <a href="/home" class="voltar">&lt; Voltar</a>
+        <a href="/inicio" class="voltar">&lt; Voltar</a>
         <button type="submit" class="btn-cadastrar">Cadastrar</button>
         <p v-if="mensagem" class="mensagem">{{ mensagem }}</p>
       </div>
