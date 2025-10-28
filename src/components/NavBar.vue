@@ -235,13 +235,12 @@ onUnmounted(() => {
   transform: scale(1.05);
 }
 
-/* 🔸 Responsividade */
 @media (max-width: 900px) {
   .navbar {
-    display: none; /* Esconde a navbar tradicional */
+    display: none;
   }
   .bottom-nav {
-    display: flex; /* Mostra o menu inferior */
+    display: flex; 
   }
 }
 </style>
