@@ -81,7 +81,7 @@ onUnmounted(() => {
     </router-link>
     <button class="bottom-item" @click="openProfile">
       <img src="/profile-white.png" alt="Perfil" />
-      <span>Perfil</span>
+      <span class="username">{{ nomeUsuario }}</span>
     </button>
   </nav>
 </template>
