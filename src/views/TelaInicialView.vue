@@ -18,8 +18,8 @@ function irParaCadastro() {
 
     <div class="right">
       <div class="header">
-        <a href="/login" class="header-link">Login</a>
-        <a href="/cadastro" class="header-link">Cadastro</a>
+        <router-link to="/login" class="header-link">Login</router-link>
+        <router-link to="/cadastro" class="header-link">Cadastro</router-link>
       </div>
 
       <div class="content">
@@ -34,7 +34,7 @@ function irParaCadastro() {
             e gatos!
           </p>
         </div>
-        <button class="btn-agendar" @click="irParaCadastro">
+        <button class="btn-agendar" @click="$router.push('/cadastro')">
           Agendar consulta
         </button>
       </div>
