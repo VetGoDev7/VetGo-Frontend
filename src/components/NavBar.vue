@@ -1,12 +1,40 @@
 <script setup>
-import '@/assets/base.css'
-import { ref } from 'vue'
+import "@/assets/base.css";
+import { ref, computed, onMounted, onUnmounted } from "vue";
+import { useUserStore } from "@/stores/userStore";
+import UserProfileModal from "./UserProfileModal.vue";
 
-const menuAtivo = ref(false)
+const showProfile = ref(false);
+const menuAtivo = ref(false);
+const isMobile = ref(window.innerWidth <= 900);
+
+const userStore = useUserStore();
+const nomeUsuario = computed(() => userStore.nomeCompleto);
+
+const openProfile = () => {
+  showProfile.value = true;
+};
+
+function toggleMenu() {
+  menuAtivo.value = !menuAtivo.value;
+}
+
+function checkScreenSize() {
+  isMobile.value = window.innerWidth <= 900;
+}
+
+onMounted(() => {
+  window.addEventListener("resize", checkScreenSize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", checkScreenSize);
+});
 </script>
 
+
 <template>
-  <nav class="navbar">
+   <nav v-if="!isMobile" class="navbar">
     <div class="logo">
       <router-link to="/home">
         <img src="/logo.png" class="logo-img" />
@@ -15,26 +43,47 @@ const menuAtivo = ref(false)
     <ul class="nav-links">
       <li><router-link to="/sobrenos">Sobre Nós</router-link></li>
       <li><router-link to="/agenda">Agendamentos</router-link></li>
-      <li><router-link :to="{path: '/home', hash: '#veterinarios'}">Veterinários</router-link></li>
-      <li><router-link :to="{ path: '/home', hash: '#servicos' }">Serviços</router-link></li>
-      <li><router-link to="/login" class="login-button">Login</router-link></li>
-      <li><router-link to="/cadastro">Cadastro</router-link></li>
+      <li>
+        <router-link :to="{ path: '/home', hash: '#veterinarios' }"
+          >Veterinários</router-link
+        >
+      </li>
+      <li>
+        <router-link :to="{ path: '/home', hash: '#servicos' }"
+          >Serviços</router-link
+        >
+      </li>
+      <div class="right-section">
+        <div class="icon">
+          <img src="/agenda.png" alt="Ícone calendário" />
+        </div>
+        <div class="icon" @click="openProfile">
+          <img src="/profile.png" alt="Ícone usuário" />
+        </div>
+        <span class="username">{{ nomeUsuario }}</span>
+      </div>
     </ul>
-    <div class="menu" :class="{ active: menuAtivo }" @click="menuAtivo = !menuAtivo">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
+    <UserProfileModal :isOpen="showProfile" @close="showProfile = false" />
+  </nav>  
 
-     <ul class="nav-links mobile" :class="{ show: menuAtivo }">
-      <li><router-link to="/sobrenos">Sobre Nós</router-link></li>         
-      <li><router-link to="/agenda">Agendamentos</router-link></li>
-      <li><a href="#servicos">Serviços</a></li>
-      <li><a href="#veterinarios">Veterinários</a></li>
-      <li><router-link to="/cadastro">Cadastro</router-link></li>
-      <li><router-link to="/login" class="login-button">Login</router-link></li>
-    </ul>
-      </nav>
+ <nav v-else class="bottom-nav">
+    <router-link to="/home" class="bottom-item">
+      <img src="/home.png" alt="Home" />
+      <span>Home</span>
+    </router-link>
+    <router-link to="/sobrenos" class="bottom-item">
+      <img src="/sobrenos.png" alt="Sobre" />
+      <span>Sobre</span>
+    </router-link>
+    <router-link to="/agenda" class="bottom-item">
+      <img src="/agenda-white.png" alt="Agendar" />
+      <span>Agenda</span>
+    </router-link>
+    <button class="bottom-item" @click="openProfile">
+      <img src="/profile-white.png" alt="Perfil" />
+      <span class="username">{{ nomeUsuario }}</span>
+    </button>
+  </nav>
 </template>
 
 <style scoped>
@@ -50,7 +99,7 @@ const menuAtivo = ref(false)
   width: 90%;
   max-width: 1200px;
   margin: 20px auto;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   position: relative;
   z-index: 1000;
 }
@@ -81,13 +130,38 @@ const menuAtivo = ref(false)
   background-color: #f0f0f0;
 }
 
-.login-button {
-  background-color: var(--cor-botao);
-  border: 3px solid rgba(150, 236, 92, 0.4);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon {
+  width: 38px;
+  height: 38px;
+  background-color: #7da882;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
+}
+
+.icon:hover {
+  background-color: #6a9370;
+  transform: scale(1.05);
+}
+
+.icon img {
+  width: 22px;
+  height: 22px;
+}
+
+.username {
+  font-size: 1.1rem;
+  color: #333;
   font-weight: 500;
+  margin-left: 8px;
 }
 
 .menu {
@@ -119,29 +193,53 @@ const menuAtivo = ref(false)
   transform: rotate(-45deg) translate(6px, -6px);
 }
 
-.nav-links.mobile {
+/* 🔹 Bottom nav (mobile) */
+.bottom-nav {
   display: none;
-  position: absolute;
-  top: 70px;
-  right: 20px;
-  background: white;
-  flex-direction: column;
-  gap: 15px;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #94C38F;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 0;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.15);
+  z-index: 999;
 }
 
-.nav-links.mobile.show {
+.bottom-item {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: 0.3s;
+  background: transparent;
+  border: none;
+}
+
+.bottom-item img {
+  width: 22px;
+  height: 22px;
+  margin-bottom: 3px;
+  filter: invert(1);
+}
+
+.bottom-item:hover {
+  transform: scale(1.05);
 }
 
 @media (max-width: 900px) {
-  .nav-links {
-    display: none; 
+  .navbar {
+    display: none;
   }
-
-  .menu {
+  .bottom-nav {
     display: flex; 
   }
 }

@@ -1,16 +1,12 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { useRoute } from 'vue-router'
 import NavBar from '@/components/NavBar.vue'
-import './assets/base.css'
+
+const route = useRoute()
 </script>
 
 <template>
-  <header>
-     <NavBar />
-  </header>
-  <RouterView />
+  <NavBar v-if="route.name && !['inicio','login','cadastro'].includes(route.name)" />
+  <RouterView v-if="route.name" />
 </template>
 
-<style scoped>
-
-</style>

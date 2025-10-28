@@ -1,82 +1,89 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
-import '@/assets/base.css'
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
+import "@/assets/base.css";
 
-const nome_completo = ref('')
-const email = ref('')
-const senha = ref('')
-const confirmar_senha = ref('')
-const nome_pet = ref('')
-const especie = ref('')
-const raca = ref('')
-const idade = ref('')
-const observacao = ref('')
-const mensagem = ref('')
-const router = useRouter()
+const nome_completo = ref("");
+const email = ref("");
+const senha = ref("");
+const confirmar_senha = ref("");
+const nome_pet = ref("");
+const especie = ref("");
+const raca = ref("");
+const idade = ref("");
+const observacao = ref("");
+const mensagem = ref("");
+const router = useRouter();
 
 async function cadastrar() {
-  mensagem.value = ''
+  mensagem.value = "";
 
-  if (!nome_completo.value || !email.value || !senha.value || !confirmar_senha.value) {
-    mensagem.value = 'Preencha todos os campos do tutor.'
-    return
+  if (
+    !nome_completo.value ||
+    !email.value ||
+    !senha.value ||
+    !confirmar_senha.value
+  ) {
+    mensagem.value = "Preencha todos os campos do tutor.";
+    return;
   }
 
   if (!nome_pet.value || !especie.value || !raca.value || !idade.value) {
-    mensagem.value = 'Preencha todos os campos do pet.'
-    return
+    mensagem.value = "Preencha todos os campos do pet.";
+    return;
   }
 
-  if (!email.value.includes('@')) {
-    mensagem.value = 'Email inválido.'
-    return
+  if (!email.value.includes("@")) {
+    mensagem.value = "Email inválido.";
+    return;
   }
 
   if (senha.value.length < 8) {
-    mensagem.value = 'A senha deve ter pelo menos 8 caracteres.'
-    return
+    mensagem.value = "A senha deve ter pelo menos 8 caracteres.";
+    return;
   }
 
   if (senha.value !== confirmar_senha.value) {
-    mensagem.value = 'As senhas não conferem.'
-    return
+    mensagem.value = "As senhas não conferem.";
+    return;
   }
   try {
-    const tutorResponse = await axios.post(import.meta.env.VITE_API_URL + '/tutores/', {
-      nome_completo: nome_completo.value,
-      email: email.value,
-      senha: senha.value,
-      confirmar_senha: confirmar_senha.value,
-    })
+    const tutorResponse = await axios.post(
+      import.meta.env.VITE_API_URL + "/tutores/",
+      {
+        nome_completo: nome_completo.value,
+        email: email.value,
+        senha: senha.value,
+        confirmar_senha: confirmar_senha.value,
+      }
+    );
 
-    const tutor = tutorResponse.data
+    const tutor = tutorResponse.data;
 
-    console.log('idade antes do envio:', idade.value, typeof idade.value)
+    console.log("idade antes do envio:", idade.value, typeof idade.value);
 
-    await axios.post(import.meta.env.VITE_API_URL + '/pets/', {
+    await axios.post(import.meta.env.VITE_API_URL + "/pets/", {
       nome: nome_pet.value,
       especie: especie.value,
       raca: raca.value,
       idade: idade.value,
       observacao: observacao.value,
       tutor: tutor.id,
-    })
+    });
 
-    mensagem.value = 'Cadastro realizado com sucesso!'
+    mensagem.value = "Cadastro realizado com sucesso!";
     setTimeout(() => {
-      router.push('/login')
-    }, 1500)
+      router.push("/login");
+    }, 1500);
   } catch (err) {
     if (err.response) {
-      mensagem.value = 'Este email já está cadastrado.' 
+      mensagem.value = "Este email já está cadastrado.";
     } else {
-      mensagem.value = 'Erro de conexão com o servidor.'
+      mensagem.value = "Erro de conexão com o servidor.";
     }
   }
 }
-
 </script>
 
 <template>
@@ -92,7 +99,11 @@ async function cadastrar() {
           <input v-model="nome_completo" required placeholder="Nome Completo" />
           <input v-model="email" type="email" placeholder="E-mail" />
           <input v-model="senha" type="password" placeholder="Crie uma senha" />
-          <input v-model="confirmar_senha" type="password" placeholder="Confirmar Senha" />
+          <input
+            v-model="confirmar_senha"
+            type="password"
+            placeholder="Confirmar Senha"
+          />
         </div>
       </div>
 
@@ -111,12 +122,21 @@ async function cadastrar() {
           <input v-model="raca" type="text" placeholder="Raça" />
           <input type="number" v-model.number="idade" placeholder="Idade" />
         </div>
-        <textarea v-model="observacao" placeholder="Observações importantes"></textarea>
+        <textarea
+          v-model="observacao"
+          placeholder="Observações importantes"
+        ></textarea>
       </div>
 
       <div class="form-buttons">
-        <a href="/home" class="voltar">&lt; Voltar</a>
-        <button type="submit" class="btn-cadastrar">Cadastrar</button>
+        <a href="/inicio" class="voltar">&lt; Voltar</a>
+
+        <div class="button-group">
+          <router-link to="/login" class="btn-login"
+            >Já tenho cadastro</router-link
+          >
+          <button type="submit" class="btn-cadastrar">Cadastrar</button>
+        </div>
         <p v-if="mensagem" class="mensagem">{{ mensagem }}</p>
       </div>
     </form>
@@ -126,7 +146,7 @@ async function cadastrar() {
 <style scoped>
 .cadastro-tutor {
   padding: 20px;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -134,7 +154,7 @@ async function cadastrar() {
 }
 
 .cadastro-tutor h1 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-weight: 700;
   text-align: center;
   font-size: 32px;
@@ -162,7 +182,7 @@ async function cadastrar() {
 }
 
 .section-header h2 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-weight: 400;
   font-size: 20px;
 }
@@ -200,7 +220,7 @@ select {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6"><path fill="%2394c38f" d="M0 0l5 6 5-6z"/></svg>');
+
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 10px 6px;
@@ -234,6 +254,14 @@ textarea:focus {
   font-size: 16px;
 }
 
+.button-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  margin-top: 15px;
+  flex-wrap: wrap; 
+}
 .btn-cadastrar {
   background-color: #94c38f;
   color: #fff;
@@ -248,6 +276,26 @@ textarea:focus {
 .btn-cadastrar:hover {
   background-color: #7cab75;
 }
+ .btn-login {
+    background-color: #ffffff;
+    color: #94c38f;
+    border: 2px solid #94c38f;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.3s ease;
+    box-shadow: 0px 4px 8px rgba(148, 195, 143, 0.2);
+  }
+
+  .btn-login:hover {
+    background-color: #94c38f;
+    color: #ffffff;
+    transform: translateY(-2px);
+  }
+
 
 @media (max-width: 480px) {
   .cadastro-tutor h1 {
@@ -291,7 +339,7 @@ textarea:focus {
     font-size: 14px;
     padding: 10px;
   }
-
+ 
   .voltar {
     text-align: center;
     font-size: 14px;
@@ -322,15 +370,14 @@ textarea:focus {
     justify-content: space-between;
   }
 
-  .btn-cadastrar {
-    padding: 10px 20px;
-    font-size: 15px;
+ .btn-cadastrar,
+  .btn-login {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px;
   }
 }
 
-/* ============================= */
-/* 💻 DESKTOP (a partir de 769px)*/
-/* ============================= */
 @media (min-width: 769px) {
   .cadastro-tutor h1 {
     font-size: 32px;

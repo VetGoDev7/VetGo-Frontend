@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
+import { useUserStore } from '@/stores/userStore'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -8,22 +9,26 @@ const email = ref('')
 const senha = ref('')
 const erro = ref('')
 
+const userStore = useUserStore()
+
 async function login() {
   erro.value = ''
-  try {
-const api = import.meta.env.VITE_API_URL
 
-const res = await axios.post(`${api}/login/`, {
-  email: email.value,
-  senha: senha.value
-})
-    
+  try {
+    const api = import.meta.env.VITE_API_URL
+
+    const res = await axios.post(`${api}/login/`, {
+      email: email.value,
+      senha: senha.value
+    })
 
     localStorage.setItem('access_token', res.data.access)
     localStorage.setItem('refresh_token', res.data.refresh)
+    localStorage.setItem('usuarioLogado', 'true')
 
-    alert(`Bem-vindo, ${res.data.tutor.nome_completo}!`)
-    router.push('/') 
+    userStore.setUser(res.data.tutor)
+
+    router.push({ name: 'home' })
   } catch (e) {
     erro.value = e.response?.data?.erro || 'Erro ao fazer login'
   }
@@ -45,7 +50,7 @@ const res = await axios.post(`${api}/login/`, {
         </form>
 
         <p class="register-text">Não tem conta? <a href="/cadastro">Cadastre-se</a></p>
-        <p v-if="erro" style="color:red; margin-top:10px">{{ erro }}</p>
+        <p v-if="erro">{{ erro }}</p>
       </div>
 
       <div class="login-right">
