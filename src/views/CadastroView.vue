@@ -44,7 +44,7 @@ async function cadastrar() {
     return
   }
   try {
-    const tutorResponse = await axios.post('http://127.0.0.1:19003/api/tutores/', {
+    const tutorResponse = await axios.post(import.meta.env.VITE_API_URL + '/tutores/', {
       nome_completo: nome_completo.value,
       email: email.value,
       senha: senha.value,
@@ -55,7 +55,7 @@ async function cadastrar() {
 
     console.log('idade antes do envio:', idade.value, typeof idade.value)
 
-    await axios.post('http://127.0.0.1:19003/api/pets/', {
+    await axios.post(import.meta.env.VITE_API_URL + '/pets/', {
       nome: nome_pet.value,
       especie: especie.value,
       raca: raca.value,
@@ -115,7 +115,7 @@ async function cadastrar() {
       </div>
 
       <div class="form-buttons">
-        <a href="/home" class="voltar">&lt; Voltar</a>
+        <a href="/inicio" class="voltar">&lt; Voltar</a>
         <button type="submit" class="btn-cadastrar">Cadastrar</button>
         <p v-if="mensagem" class="mensagem">{{ mensagem }}</p>
       </div>

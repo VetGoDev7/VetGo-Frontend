@@ -1,8 +1,12 @@
 <script setup>
 import '@/assets/base.css'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'  
+import { useUserStore } from '@/stores/userStore'
 
 const menuAtivo = ref(false)
+const userStore = useUserStore()
+
+const nomeUsuario = computed(() => userStore.nomeCompleto)
 </script>
 
 <template>
@@ -17,8 +21,15 @@ const menuAtivo = ref(false)
       <li><router-link to="/agenda">Agendamentos</router-link></li>
       <li><router-link :to="{path: '/home', hash: '#veterinarios'}">Veterinários</router-link></li>
       <li><router-link :to="{ path: '/home', hash: '#servicos' }">Serviços</router-link></li>
-      <li><router-link to="/login" class="login-button">Login</router-link></li>
-      <li><router-link to="/cadastro">Cadastro</router-link></li>
+    <div class="right-section">
+      <div class="icon">
+        <img src="/agenda.png" alt="Ícone calendário" />
+      </div>
+      <div class="icon">
+        <img src="/profile.png" alt="Ícone usuário" />
+      </div>
+      <span class="username">{{ nomeUsuario }}</span>
+    </div>
     </ul>
     <div class="menu" :class="{ active: menuAtivo }" @click="menuAtivo = !menuAtivo">
       <span></span>
@@ -81,13 +92,39 @@ const menuAtivo = ref(false)
   background-color: #f0f0f0;
 }
 
-.login-button {
-  background-color: var(--cor-botao);
-  border: 3px solid rgba(150, 236, 92, 0.4);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
+
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon {
+  width: 38px;
+  height: 38px;
+  background-color: #7da882;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
+}
+
+.icon:hover {
+  background-color: #6a9370;
+  transform: scale(1.05);
+}
+
+.icon img {
+  width: 22px;
+  height: 22px;
+}
+
+.username {
+  font-size: 1.1rem;
+  color: #333;
   font-weight: 500;
+  margin-left: 8px;
 }
 
 .menu {
