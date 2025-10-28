@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import ApiService from '@/stores/api.js'
+import ApiService from '@/stores/apiAgen.js'
 
 const agendamentos = ref([])
 const veterinarios = ref([])
