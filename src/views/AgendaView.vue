@@ -1,3 +1,6 @@
+
+
+
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import axios from 'axios'
@@ -9,6 +12,7 @@ const API_URL = 'http://127.0.0.1:19003/api'
 const agendamentos = ref([])
 const veterinarios = ref([])
 const pets = ref([])
+const servicos = ref([])
 const showNovoAgendamento = ref(false)
 const submitError = ref(null)
 const successMessage = ref(null)
@@ -20,6 +24,7 @@ const novoAgendamento = ref({
   data_hora: '',
   pet: '',
   veterinario: '',
+  servico: ''
 })
 
 const showSuccess = (msg) => {
@@ -63,7 +68,10 @@ const fetchAgendamentos = async () => {
   loading.value = true
   try {
     const { data } = await axios.get(`${API_URL}/agendamentos/`, { params: filters.value })
-    agendamentos.value = data.map(a => ({
+    const lista = Array.isArray(data)
+      ? data
+      : (Array.isArray(data.results) ? data.results : data.agendamentos || [])
+    agendamentos.value = lista.map(a => ({
       id: a.id,
       data_hora: a.data_hora,
       status: a.status,
@@ -83,23 +91,42 @@ const fetchAgendamentos = async () => {
 
 const fetchDadosAuxiliares = async () => {
   try {
-    const [v, p] = await Promise.all([
-      axios.get(`${API_URL}/veterinarios/`).then(res => res.data).catch(() => []),
-      axios.get(`${API_URL}/pets/`).then(res => res.data).catch(() => [])
-    ])
-    veterinarios.value = v
-    pets.value = p
+    const [vRes, pRes, sRes] = await Promise.all([
+      axios.get(`${API_URL}/veterinarios/`).catch(() => ({ data: [] })),
+      axios.get(`${API_URL}/pets/`).catch(() => ({ data: [] })),
+      axios.get(`${API_URL}/servicos/`).catch(() => ({ data: [] }))
+    ]);
+
+    const vets = Array.isArray(vRes.data) ? vRes.data : Array.isArray(vRes.data.results) ? vRes.data.results : [];
+    const petsList = Array.isArray(pRes.data) ? pRes.data : Array.isArray(pRes.data.results) ? pRes.data.results : [];
+    const servs = Array.isArray(sRes.data) ? sRes.data : Array.isArray(sRes.data.results) ? sRes.data.results : [];
+
+    const petsFormatted = petsList.map(pet => ({
+      ...pet,
+      tutor_nome: pet.tutor?.nome || 'Sem tutor'
+    }));
+
+    veterinarios.value = vets;
+    pets.value = petsFormatted;
+    servicos.value = servs;
+
   } catch (error) {
-    console.error(error)
-    showError('Erro ao carregar dados auxiliares.')
+    console.error(error);
+    showError('Erro ao carregar dados auxiliares.');
   }
 }
 
 const criarAgendamento = async () => {
   submitError.value = null
+
+  if (!novoAgendamento.value.data_hora || !novoAgendamento.value.pet || !novoAgendamento.value.veterinario || !novoAgendamento.value.servico) {
+    showError('Todos os campos são obrigatórios.')
+    return
+  }
+
   try {
     const payload = {
-      data_hora: novoAgendamento.value.data_hora,
+      data_hora: new Date(novoAgendamento.value.data_hora).toISOString(),
       pet: parseInt(novoAgendamento.value.pet),
       veterinario: parseInt(novoAgendamento.value.veterinario),
       servico: parseInt(novoAgendamento.value.servico),
@@ -113,7 +140,11 @@ const criarAgendamento = async () => {
     router.push({ name: 'Agendamentos' })
   } catch (error) {
     console.error(error)
-    showError('Erro ao criar agendamento.')
+    if (error.response?.data) {
+      showError(`Erro: ${JSON.stringify(error.response.data)}`)
+    } else {
+      showError('Erro ao criar agendamento.')
+    }
   }
 }
 
