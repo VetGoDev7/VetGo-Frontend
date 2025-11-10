@@ -1,20 +1,24 @@
+
+
+
 <script setup>
-import { ref, onMounted } from 'vue'
-import ApiService from '@/stores/api.js'
+import { ref, onMounted, nextTick } from 'vue'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const API_URL = 'http://127.0.0.1:19003/api'
 
 const agendamentos = ref([])
 const veterinarios = ref([])
 const pets = ref([])
 const servicos = ref([])
-
-const loading = ref(false)
 const showNovoAgendamento = ref(false)
 const submitError = ref(null)
 const successMessage = ref(null)
+const loading = ref(false)
 
-const filters = ref({
-  status: ''
-})
+const filters = ref({ status: '' })
 
 const novoAgendamento = ref({
   data_hora: '',
@@ -23,35 +27,24 @@ const novoAgendamento = ref({
   servico: ''
 })
 
-const showSuccess = (message) => {
-  successMessage.value = message
-  setTimeout(() => {
-    successMessage.value = null
-  }, 3000)
+const showSuccess = (msg) => {
+  successMessage.value = msg
+  setTimeout(() => (successMessage.value = null), 3000)
 }
 
-const showError = (message) => {
-  submitError.value = message
-  setTimeout(() => {
-    submitError.value = null
-  }, 5000)
+const showError = (msg) => {
+  submitError.value = msg
+  setTimeout(() => (submitError.value = null), 5000)
 }
 
-const formatDateTime = (dateTimeString) => {
-  if (!dateTimeString) return 'N/A'
-  try {
-    return new Date(dateTimeString).toLocaleString('pt-BR')
-  } catch {
-    return dateTimeString
-  }
+const formatDateTime = (dt) => {
+  if (!dt) return 'N/A'
+  try { return new Date(dt).toLocaleString('pt-BR') } 
+  catch (error) { return dt }
 }
 
 const getStatusDisplay = (status) => {
-  const map = {
-    pendente: 'Pendente',
-    confirmado: 'Confirmado',
-    cancelado: 'Cancelado'
-  }
+  const map = { pendente: 'Pendente', confirmado: 'Confirmado', cancelado: 'Cancelado' }
   return map[status] || status
 }
 
@@ -61,12 +54,7 @@ const clearFilters = () => {
 }
 
 const resetNovoAgendamento = () => {
-  novoAgendamento.value = {
-    data_hora: '',
-    pet: '',
-    veterinario: '',
-    servico: ''
-  }
+  novoAgendamento.value = { data_hora: '', pet: '', veterinario: '', servico: '' }
 }
 
 const fecharModal = () => {
@@ -75,15 +63,26 @@ const fecharModal = () => {
   submitError.value = null
 }
 
+
 const fetchAgendamentos = async () => {
   loading.value = true
-  submitError.value = null
-  
   try {
-    const data = await ApiService.getAgendamentos(filters.value)
-    agendamentos.value = Array.isArray(data) ? data : []
-  } catch {
-    showError('Erro ao carregar agendamentos. Verifique se o servidor está rodando.')
+    const { data } = await axios.get(`${API_URL}/agendamentos/`, { params: filters.value })
+    const lista = Array.isArray(data)
+      ? data
+      : (Array.isArray(data.results) ? data.results : data.agendamentos || [])
+    agendamentos.value = lista.map(a => ({
+      id: a.id,
+      data_hora: a.data_hora,
+      status: a.status,
+      pet_info: a.pet || null,
+      veterinario_info: a.veterinario || null,
+      servico_info: a.servico || null,
+      tutor_info: a.pet?.tutor || null
+    }))
+  } catch (error) {
+    console.error(error)
+    showError('Erro ao carregar agendamentos.')
     agendamentos.value = []
   } finally {
     loading.value = false
@@ -92,73 +91,82 @@ const fetchAgendamentos = async () => {
 
 const fetchDadosAuxiliares = async () => {
   try {
-    const [v, p, s] = await Promise.all([
-      ApiService.getVeterinarios().catch(() => []),
-      ApiService.getPets().catch(() => []),
-      ApiService.getServicos().catch(() => [])
-    ])
-    
-    veterinarios.value = v || []
-    pets.value = p || []
-    servicos.value = s || []
-    
-  } catch {
-    showError('Erro ao carregar dados auxiliares.')
-  }
-}
+    const [vRes, pRes, sRes] = await Promise.all([
+      axios.get(`${API_URL}/veterinarios/`).catch(() => ({ data: [] })),
+      axios.get(`${API_URL}/pets/`).catch(() => ({ data: [] })),
+      axios.get(`${API_URL}/servicos/`).catch(() => ({ data: [] }))
+    ]);
 
-const fetchProximosAgendamentos = async () => {
-  loading.value = true
-  try {
-    const data = await ApiService.getProximosAgendamentos()
-    agendamentos.value = Array.isArray(data) ? data : []
-    showSuccess('Próximos agendamentos carregados!')
-  } catch {
-    showError('Erro ao buscar próximos agendamentos.')
-  } finally {
-    loading.value = false
+    const vets = Array.isArray(vRes.data) ? vRes.data : Array.isArray(vRes.data.results) ? vRes.data.results : [];
+    const petsList = Array.isArray(pRes.data) ? pRes.data : Array.isArray(pRes.data.results) ? pRes.data.results : [];
+    const servs = Array.isArray(sRes.data) ? sRes.data : Array.isArray(sRes.data.results) ? sRes.data.results : [];
+
+    const petsFormatted = petsList.map(pet => ({
+      ...pet,
+      tutor_nome: pet.tutor?.nome || 'Sem tutor'
+    }));
+
+    veterinarios.value = vets;
+    pets.value = petsFormatted;
+    servicos.value = servs;
+
+  } catch (error) {
+    console.error(error);
+    showError('Erro ao carregar dados auxiliares.');
   }
 }
 
 const criarAgendamento = async () => {
   submitError.value = null
 
+  if (!novoAgendamento.value.data_hora || !novoAgendamento.value.pet || !novoAgendamento.value.veterinario || !novoAgendamento.value.servico) {
+    showError('Todos os campos são obrigatórios.')
+    return
+  }
+
   try {
     const payload = {
-      data_hora: novoAgendamento.value.data_hora,
+      data_hora: new Date(novoAgendamento.value.data_hora).toISOString(),
       pet: parseInt(novoAgendamento.value.pet),
       veterinario: parseInt(novoAgendamento.value.veterinario),
       servico: parseInt(novoAgendamento.value.servico),
       status: 'pendente'
     }
-    
-    await ApiService.createAgendamento(payload)
+    await axios.post(`${API_URL}/agendamentos/`, payload)
     fecharModal()
-    fetchAgendamentos()
+    await fetchAgendamentos()
     showSuccess('Agendamento criado com sucesso!')
-  } catch {
-    showError('Erro ao criar agendamento. Verifique os dados.')
+    await nextTick()
+    router.push({ name: 'Agendamentos' })
+  } catch (error) {
+    console.error(error)
+    if (error.response?.data) {
+      showError(`Erro: ${JSON.stringify(error.response.data)}`)
+    } else {
+      showError('Erro ao criar agendamento.')
+    }
   }
 }
 
 const confirmarAgendamento = async (id) => {
   try {
-    await ApiService.confirmAgendamento(id)
-    fetchAgendamentos()
-    showSuccess('Agendamento confirmado com sucesso!')
-  } catch {
+    await axios.patch(`${API_URL}/agendamentos/${id}/`, { status: 'confirmado' })
+    await fetchAgendamentos()
+    showSuccess('Agendamento confirmado!')
+  } catch (error) {
+    console.error(error)
     showError('Erro ao confirmar agendamento.')
   }
 }
 
 const cancelarAgendamento = async (id) => {
   if (!confirm('Tem certeza que deseja cancelar este agendamento?')) return
-  
   try {
-    await ApiService.cancelAgendamento(id)
-    fetchAgendamentos()
-    showSuccess('Agendamento cancelado com sucesso!')
-  } catch {
+    await axios.patch(`${API_URL}/agendamentos/${id}/`, { status: 'cancelado' })
+    await fetchAgendamentos()
+    showSuccess('Agendamento cancelado!')
+  } catch (error) {
+    console.error(error)
     showError('Erro ao cancelar agendamento.')
   }
 }
@@ -168,6 +176,7 @@ onMounted(() => {
   fetchDadosAuxiliares()
 })
 </script>
+
 
 <template>
   <div class="agendamentos-container">
@@ -297,16 +306,6 @@ onMounted(() => {
               <option value="">Selecione um veterinário</option>
               <option v-for="vet in veterinarios" :key="vet.id" :value="vet.id">
                 {{ vet.nome_completo }} - {{ vet.especialidade }}
-              </option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="novo_servico">Serviço:</label>
-            <select id="novo_servico" v-model="novoAgendamento.servico" required>
-              <option value="">Selecione um serviço</option>
-              <option v-for="servico in servicos" :key="servico.id" :value="servico.id">
-                {{ servico.nome }} - R$ {{ servico.preco || '0,00' }}
               </option>
             </select>
           </div>

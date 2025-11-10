@@ -54,9 +54,6 @@ onUnmounted(() => {
         >
       </li>
       <div class="right-section">
-        <div class="icon">
-          <img src="/agenda.png" alt="Ícone calendário" />
-        </div>
         <div class="icon" @click="openProfile">
           <img src="/profile.png" alt="Ícone usuário" />
         </div>
