@@ -34,25 +34,27 @@ onUnmounted(() => {
 
 
 <template>
-   <nav v-if="!isMobile" class="navbar">
+  <nav v-if="!isMobile" class="navbar">
     <div class="logo">
       <router-link to="/home">
         <img src="/logo.png" class="logo-img" />
       </router-link>
     </div>
+
     <ul class="nav-links">
       <li><router-link to="/sobrenos">Sobre Nós</router-link></li>
       <li><router-link to="/agenda">Agendamentos</router-link></li>
       <li>
-        <router-link :to="{ path: '/home', hash: '#veterinarios' }"
-          >Veterinários</router-link
-        >
+        <router-link :to="{ path: '/home', hash: '#veterinarios' }">
+          Veterinários
+        </router-link>
       </li>
       <li>
-        <router-link :to="{ path: '/home', hash: '#servicos' }"
-          >Serviços</router-link
-        >
+        <router-link :to="{ path: '/home', hash: '#servicos' }">
+          Serviços
+        </router-link>
       </li>
+
       <div class="right-section">
         <div class="icon" @click="openProfile">
           <img src="/profile.png" alt="Ícone usuário" />
@@ -60,26 +62,32 @@ onUnmounted(() => {
         <span class="username">{{ nomeUsuario }}</span>
       </div>
     </ul>
-    <UserProfileModal :isOpen="showProfile" @close="showProfile = false" />
-  </nav>  
 
- <nav v-else class="bottom-nav">
+    <UserProfileModal :isOpen="showProfile" @close="showProfile = false" />
+  </nav>
+
+  <nav v-else class="bottom-nav">
     <router-link to="/home" class="bottom-item">
       <img src="/home.png" alt="Home" />
       <span>Home</span>
     </router-link>
+
     <router-link to="/sobrenos" class="bottom-item">
       <img src="/sobrenos.png" alt="Sobre" />
       <span>Sobre</span>
     </router-link>
+
     <router-link to="/agenda" class="bottom-item">
       <img src="/agenda-white.png" alt="Agendar" />
       <span>Agenda</span>
     </router-link>
+
     <button class="bottom-item" @click="openProfile">
       <img src="/profile-white.png" alt="Perfil" />
       <span class="username">{{ nomeUsuario }}</span>
     </button>
+
+    <UserProfileModal :isOpen="showProfile" @close="showProfile = false" />
   </nav>
 </template>
 
