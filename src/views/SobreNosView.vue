@@ -29,8 +29,6 @@ import FooterRodape from '@/components/FooterRodape.vue';
         </p>
       </div>
     </div>
-
-    <div class="bloco-cinza">localização</div>
   </div>
   <FooterRodape />
 </template>
@@ -91,5 +89,61 @@ import FooterRodape from '@/components/FooterRodape.vue';
   padding: 10px;
   color: #222;
   font-size: 0.9rem;
+}
+
+@media (max-width: 1024px) {
+  .sobre-nos {
+    max-width: 95%;
+    padding: 15px;
+  }
+
+  .sessao {
+    gap: 15px;
+  }
+
+  .sessao img {
+    width: 45%;
+    height: auto;
+  }
+
+  .titulo {
+    font-size: 2rem;
+  }
+
+  .sessao .texto p {
+    font-size: 1rem;
+    line-height: 1.4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .sessao {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .sessao.inverse {
+    flex-direction: column; 
+  }
+
+  .sessao img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+
+  .titulo {
+    font-size: 1.8rem;
+    margin-top: 10px;
+  }
+
+  .texto {
+    width: 100%;
+  }
+
+  .sessao .texto p {
+    font-size: 0.95rem;
+    margin-top: 10px;
+  }
 }
 </style>
