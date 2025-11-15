@@ -72,6 +72,9 @@ const fecharModal = () => {
   submitError.value = null
 }
 
+/* ------------------------------
+      FUNÇÃO CORRIGIDA
+--------------------------------*/
 const fetchAgendamentos = async () => {
   loading.value = true
   try {
