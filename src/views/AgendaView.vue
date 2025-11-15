@@ -1,12 +1,11 @@
-altere no front
+
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const API_URL = 'http://127.0.0.1:19003/api'
-
+const API_URL = 'http://127.0.0.0:19003/api'
 
 const agendamentos = ref([])
 const veterinarios = ref([])
@@ -25,7 +24,6 @@ const novoAgendamento = ref({
   servico: ''
 })
 
-// Funções auxiliares de mensagens
 const showSuccess = (msg) => {
   successMessage.value = msg
   setTimeout(() => (successMessage.value = null), 3000)
@@ -40,13 +38,17 @@ const formatDateTime = (dt) => {
   if (!dt) return 'N/A'
   try {
     return new Date(dt).toLocaleString('pt-BR')
-  } catch (error) {
+  } catch {
     return dt
   }
 }
 
 const getStatusDisplay = (status) => {
-  const map = { pendente: 'Pendente', confirmado: 'Confirmado', cancelado: 'Cancelado' }
+  const map = {
+    pendente: 'Pendente',
+    confirmado: 'Confirmado',
+    cancelado: 'Cancelado'
+  }
   return map[status] || status
 }
 
@@ -56,7 +58,12 @@ const clearFilters = () => {
 }
 
 const resetNovoAgendamento = () => {
-  novoAgendamento.value = { data_hora: '', pet: '', veterinario: '', servico: '' }
+  novoAgendamento.value = {
+    data_hora: '',
+    pet: '',
+    veterinario: '',
+    servico: ''
+  }
 }
 
 const fecharModal = () => {
@@ -65,14 +72,18 @@ const fecharModal = () => {
   submitError.value = null
 }
 
-
+/* ------------------------------
+      FUNÇÃO CORRIGIDA
+--------------------------------*/
 const fetchAgendamentos = async () => {
   loading.value = true
   try {
-    const { data } = await axios.get(`${API_URL}/agendamentos/`, { params: filters.value })
-    const lista = Array.isArray(data)
-      ? data
-      : (Array.isArray(data.results) ? data.results : data.agendamentos || [])
+    const { data } = await axios.get(`${API_URL}/agendamentos/`, {
+      params: filters.value
+    })
+
+    const lista = data.results || []
+
     agendamentos.value = lista.map(a => ({
       id: a.id,
       data_hora: a.data_hora,
@@ -91,7 +102,6 @@ const fetchAgendamentos = async () => {
   }
 }
 
-
 const fetchDadosAuxiliares = async () => {
   try {
     const [vRes, pRes, sRes] = await Promise.all([
@@ -100,28 +110,27 @@ const fetchDadosAuxiliares = async () => {
       axios.get(`${API_URL}/servicos/`).catch(() => ({ data: [] }))
     ])
 
-    veterinarios.value = Array.isArray(vRes.data)
-      ? vRes.data
-      : vRes.data.results || []
-
-    pets.value = Array.isArray(pRes.data)
-      ? pRes.data.map(p => ({ ...p, tutor_nome: p.tutor?.nome || 'Sem tutor' }))
-      : pRes.data.results || []
-
-    servicos.value = Array.isArray(sRes.data)
-      ? sRes.data
-      : sRes.data.results || []
-
+    veterinarios.value = vRes.data.results || vRes.data
+    pets.value = (pRes.data.results || pRes.data).map(p => ({
+      ...p,
+      tutor_nome: p.tutor?.nome || 'Sem tutor'
+    }))
+    servicos.value = sRes.data.results || sRes.data
   } catch (error) {
     console.error(error)
     showError('Erro ao carregar dados auxiliares.')
   }
 }
 
-
 const criarAgendamento = async () => {
   submitError.value = null
-  if (!novoAgendamento.value.data_hora || !novoAgendamento.value.pet || !novoAgendamento.value.veterinario || !novoAgendamento.value.servico) {
+
+  if (
+    !novoAgendamento.value.data_hora ||
+    !novoAgendamento.value.pet ||
+    !novoAgendamento.value.veterinario ||
+    !novoAgendamento.value.servico
+  ) {
     showError('Todos os campos são obrigatórios.')
     return
   }
@@ -134,29 +143,32 @@ const criarAgendamento = async () => {
       servico: parseInt(novoAgendamento.value.servico),
       status: 'pendente'
     }
+
     await axios.post(`${API_URL}/agendamentos/`, payload)
+
     fecharModal()
     await fetchAgendamentos()
     showSuccess('Agendamento criado com sucesso!')
+
     await nextTick()
     router.push({ name: 'Agendamentos' })
+
   } catch (error) {
     console.error(error)
-    if (error.response?.data) {
-      showError(`Erro: ${JSON.stringify(error.response.data)}`)
-    } else {
-      showError('Erro ao criar agendamento.')
-    }
+    showError(
+      error.response?.data
+        ? `Erro: ${JSON.stringify(error.response.data)}`
+        : 'Erro ao criar agendamento.'
+    )
   }
 }
 
 const confirmarAgendamento = async (id) => {
   try {
     await axios.patch(`${API_URL}/agendamentos/${id}/`, { status: 'confirmado' })
-    await fetchAgendamentos()
+    fetchAgendamentos()
     showSuccess('Agendamento confirmado!')
-  } catch (error) {
-    console.error(error)
+  } catch {
     showError('Erro ao confirmar agendamento.')
   }
 }
@@ -165,24 +177,28 @@ const cancelarAgendamento = async (id) => {
   if (!confirm('Tem certeza que deseja cancelar este agendamento?')) return
   try {
     await axios.patch(`${API_URL}/agendamentos/${id}/`, { status: 'cancelado' })
-    await fetchAgendamentos()
+    fetchAgendamentos()
     showSuccess('Agendamento cancelado!')
-  } catch (error) {
-    console.error(error)
+  } catch {
     showError('Erro ao cancelar agendamento.')
   }
 }
 
-
+/* ------------------------------
+    FUNÇÃO "PRÓXIMOS" CORRIGIDA
+--------------------------------*/
 const fetchProximosAgendamentos = async () => {
   loading.value = true
   try {
     const hoje = new Date().toISOString().split('T')[0]
-    const { data } = await axios.get(`${API_URL}/agendamentos/`, { params: { data_min: hoje } })
-    agendamentos.value = Array.isArray(data) ? data : data.results || []
+
+    const { data } = await axios.get(`${API_URL}/agendamentos/`, {
+      params: { data_inicio: hoje }
+    })
+
+    agendamentos.value = data.results || []
     showSuccess('Exibindo próximos agendamentos!')
-  } catch (error) {
-    console.error(error)
+  } catch {
     showError('Erro ao carregar próximos agendamentos.')
   } finally {
     loading.value = false
@@ -194,6 +210,7 @@ onMounted(() => {
   fetchDadosAuxiliares()
 })
 </script>
+
 
 <template>
   <div class="agendamentos-container">
