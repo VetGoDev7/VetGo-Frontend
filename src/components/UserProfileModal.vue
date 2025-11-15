@@ -36,6 +36,7 @@ const userStore = useUserStore()
 </template>
  
 <style scoped>
+
 .overlay {
   position: fixed;
   top: 0;
@@ -97,4 +98,84 @@ const userStore = useUserStore()
   border-radius: 10px;
   cursor: pointer;
 }
+/* ===========================
+   RESPONSIVIDADE PARA TABLET
+   (até 1024px)
+=========================== */
+@media (max-width: 1024px) {
+  .modal {
+    width: 380px;
+    padding: 1.8rem;
+  }
+
+  .form input,
+  .form textarea {
+    font-size: 1rem;
+  }
+
+  .edit-btn {
+    font-size: 1rem;
+  }
+}
+
+/* ===========================
+   RESPONSIVIDADE PARA MOBILE
+   (até 768px)
+=========================== */
+@media (max-width: 768px) {
+  .modal {
+    width: 90%;
+    padding: 1.5rem;
+    border-radius: 14px;
+  }
+
+  .profile-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .avatar {
+    width: 55px;
+  }
+
+  .duo {
+    flex-direction: column;  /* empilha idade + espécie no mobile */
+  }
+
+  .form input,
+  .form textarea {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+
+  .edit-btn {
+    font-size: 0.95rem;
+    padding: 12px;
+  }
+}
+
+/* ===========================
+   MOBILE MUITO JUSTO (opcional)
+   (até 480px)
+   -> Se não quiser esse breakpoint,
+      pode remover.
+=========================== */
+@media (max-width: 480px) {
+  .modal {
+    padding: 1.2rem;
+  }
+
+  .profile-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .avatar {
+    width: 48px;
+  }
+
+  .form input,
+  .form textarea {
+    font-size: 0.9rem;
+  }
+}
+
 </style>
