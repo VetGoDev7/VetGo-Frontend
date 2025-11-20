@@ -1,4 +1,3 @@
-
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import axios from 'axios'
@@ -184,9 +183,20 @@ const cancelarAgendamento = async (id) => {
   }
 }
 
-/* ------------------------------
-    FUNÇÃO "PRÓXIMOS" CORRIGIDA
---------------------------------*/
+
+const deletarAgendamento = async (id) => {
+  if (!confirm('Tem certeza que deseja excluir definitivamente este agendamento?')) return
+  
+  try {
+    await axios.delete(`${API_URL}/agendamentos/${id}/`)
+    fetchAgendamentos()
+    showSuccess('Agendamento excluído com sucesso!')
+  } catch (error) {
+    console.error(error)
+    showError('Erro ao excluir agendamento.')
+  }
+}
+
 const fetchProximosAgendamentos = async () => {
   loading.value = true
   try {
@@ -254,10 +264,44 @@ onMounted(() => {
             <div><strong>Serviço:</strong> {{ agendamento.servico_info?.nome || 'N/A' }}</div>
             <div><strong>Tutor:</strong> {{ agendamento.tutor_info?.nome || 'N/A' }}</div>
           </div>
-
           <div class="agendamento-actions">
-            <button v-if="agendamento.status === 'pendente'" @click="confirmarAgendamento(agendamento.id)" class="btn-success">Confirmar</button>
-            <button v-if="agendamento.status !== 'cancelado'" @click="cancelarAgendamento(agendamento.id)" class="btn-danger">Cancelar</button>
+
+          
+            <button 
+              v-if="agendamento.status === 'pendente'" 
+              @click="confirmarAgendamento(agendamento.id)" 
+              class="btn-success"
+            >
+              Confirmar
+            </button>
+
+            <!-- CANCELAR -->
+            <button 
+              v-if="agendamento.status !== 'cancelado'" 
+              @click="cancelarAgendamento(agendamento.id)" 
+              class="btn-danger"
+            >
+              Cancelar
+            </button>
+
+            <!-- EXCLUIR (SOMENTE CANCELADO) -->
+            <button 
+              v-if="agendamento.status === 'cancelado'" 
+              @click="deletarAgendamento(agendamento.id)" 
+              class="btn-trash"
+              title="Excluir"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" 
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                <path d="M10 11v6"></path>
+                <path d="M14 11v6"></path>
+                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+              </svg>
+            </button>
+
           </div>
         </div>
       </div>
@@ -394,6 +438,28 @@ onMounted(() => {
   height: fit-content;
 }
 
+
+.btn-trash {
+  background: #ff4444;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-trash svg {
+  stroke: white;
+}
+
+.btn-trash:hover {
+  background: #cc0000;
+  transform: scale(1.05);
+  transition: 0.2s;
+}
+
 .agendamentos-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -417,18 +483,6 @@ onMounted(() => {
   border-bottom: 1px solid #eee;
 }
 
-.agendamento-header h3 {
-  margin: 0;
-  color: #333;
-}
-
-.status {
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
-
 .status-pendente {
   background: #fff3cd;
   color: #856404;
@@ -442,21 +496,6 @@ onMounted(() => {
 .status-cancelado {
   background: #f8d7da;
   color: #721c24;
-}
-
-.agendamento-info {
-  margin-bottom: 1rem;
-}
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-  padding: 0.25rem 0;
-}
-
-.info-row strong {
-  color: #555;
 }
 
 .agendamento-actions {
@@ -487,130 +526,5 @@ onMounted(() => {
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #eee;
-}
-
-.btn-close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #6c757d;
-}
-
-.btn-close:hover {
-  color: #333;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-  color: #333;
-}
-
-.form-group input,
-.form-group select {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: #7cab75;
-  box-shadow: 0 0 0 2px rgba(124, 171, 117, 0.25);
-}
-
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 2rem;
-}
-
-.alert {
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  border: 1px solid transparent;
-}
-
-.alert-error {
-  background: #f8d7da;
-  color: #721c24;
-  border-color: #f5c6cb;
-}
-
-.alert-success {
-  background: #d1edff;
-  color: #0c5460;
-  border-color: #b3d9ff;
-}
-
-.loading {
-  text-align: center;
-  padding: 3rem;
-  color: #6c757d;
-}
-
-.spinner {
-  border: 2px solid #f3f3f3;
-  border-top: 2px solid #7cab75;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  animation: spin 1s linear infinite;
-  display: inline-block;
-  margin-right: 10px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.no-data {
-  text-align: center;
-  padding: 4rem;
-  color: #6c757d;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 2px dashed #dee2e6;
-}
-
-@media (max-width: 768px) {
-  .filters {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .actions {
-    flex-direction: column;
-  }
-  
-  .agendamentos-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .info-row {
-    flex-direction: column;
-    gap: 0.25rem;
-  }
 }
 </style>
