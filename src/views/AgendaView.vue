@@ -275,7 +275,6 @@ onMounted(() => {
               Confirmar
             </button>
 
-            <!-- CANCELAR -->
             <button 
               v-if="agendamento.status !== 'cancelado'" 
               @click="cancelarAgendamento(agendamento.id)" 
@@ -284,7 +283,6 @@ onMounted(() => {
               Cancelar
             </button>
 
-            <!-- EXCLUIR (SOMENTE CANCELADO) -->
             <button 
               v-if="agendamento.status === 'cancelado'" 
               @click="deletarAgendamento(agendamento.id)" 
@@ -505,26 +503,133 @@ onMounted(() => {
   margin-top: 1rem;
 }
 
+
+
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 1000;
+  justify-content: center;
+  z-index: 2000;
 }
 
 .modal {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  max-width: 500px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 14px;
+  width: 450px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+  animation: modalShow 0.25s ease-out;
+  font-family: Arial, sans-serif;
+  position: relative;
 }
+
+/* Animação suave */
+@keyframes modalShow {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #2d2d2d;
+}
+
+/* Botão X */
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #444;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-close:hover {
+  color: #7cab75;
+}
+
+
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cfcfcf;
+  background: #fafafa;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #7cab75;
+  outline: none;
+}
+
+
+
+.form-actions {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-primary {
+  background: #7cab75 !important;
+  color: white;
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: #6e9f68 !important;
+}
+
+.btn-secondary {
+  background: #6c757d !important;
+  color: white;
+  padding: 10px 22px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-secondary:hover {
+  opacity: 0.85;
+}
+
 </style>
