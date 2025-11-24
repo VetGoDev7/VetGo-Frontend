@@ -1,238 +1,192 @@
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
-const API_URL = 'http://127.0.0.0:19003/api'
+const API_URL = 'http://127.0.0.1:19003/api'
 
-const agendamentos = ref([])
+const currentUser = ref(null)
+const isAuthenticated = ref(false)
+const isAdmin = ref(false)
+
 const veterinarios = ref([])
 const pets = ref([])
 const servicos = ref([])
+const agendamentos = ref([])
+
+const submitError = ref('')
+const successMessage = ref('')
+const filters = ref({ data: '', veterinario: null, pet: null, status: '' })
 const showNovoAgendamento = ref(false)
-const submitError = ref(null)
-const successMessage = ref(null)
+const novoAgendamento = ref({ data_hora: '', pet: '', veterinario: '', servico: '' })
 const loading = ref(false)
-const filters = ref({ status: '' })
+const actionLoading = ref(false)
 
-const novoAgendamento = ref({
-  data_hora: '',
-  pet: '',
-  veterinario: '',
-  servico: ''
-})
+const showError = (msg) => { submitError.value = msg }
+const showSuccess = (msg) => { successMessage.value = msg }
 
-const showSuccess = (msg) => {
-  successMessage.value = msg
-  setTimeout(() => (successMessage.value = null), 3000)
+const setupAuth = () => {
+  const token = localStorage.getItem('token')
+  if (token) axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+  else delete axios.defaults.headers.common['Authorization']
 }
 
-const showError = (msg) => {
-  submitError.value = msg
-  setTimeout(() => (submitError.value = null), 5000)
-}
-
-const formatDateTime = (dt) => {
-  if (!dt) return 'N/A'
-  try {
-    return new Date(dt).toLocaleString('pt-BR')
-  } catch {
-    return dt
-  }
-}
-
-const getStatusDisplay = (status) => {
-  const map = {
-    pendente: 'Pendente',
-    confirmado: 'Confirmado',
-    cancelado: 'Cancelado'
-  }
-  return map[status] || status
-}
-
-const clearFilters = () => {
-  filters.value = { status: '' }
-  fetchAgendamentos()
-}
-
-const resetNovoAgendamento = () => {
-  novoAgendamento.value = {
-    data_hora: '',
-    pet: '',
-    veterinario: '',
-    servico: ''
-  }
-}
+const formatDateTime = (dt) => dt ? new Date(dt).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '—'
+const getStatusDisplay = (status) => status ? status.charAt(0).toUpperCase() + status.slice(1) : '—'
 
 const fecharModal = () => {
   showNovoAgendamento.value = false
-  resetNovoAgendamento()
-  submitError.value = null
+  novoAgendamento.value = { data_hora: '', pet: '', veterinario: '', servico: '' }
 }
 
-/* ------------------------------
-      FUNÇÃO CORRIGIDA
---------------------------------*/
-const fetchAgendamentos = async () => {
-  loading.value = true
+const fetchCurrentUser = async () => {
+  setupAuth()
   try {
-    const { data } = await axios.get(`${API_URL}/agendamentos/`, {
-      params: filters.value
-    })
-
-    const lista = data.results || []
-
-    agendamentos.value = lista.map(a => ({
-      id: a.id,
-      data_hora: a.data_hora,
-      status: a.status,
-      pet_info: a.pet || null,
-      veterinario_info: a.veterinario || null,
-      servico_info: a.servico || null,
-      tutor_info: a.pet?.tutor || null
-    }))
-  } catch (error) {
-    console.error(error)
-    showError('Erro ao carregar agendamentos.')
-    agendamentos.value = []
-  } finally {
-    loading.value = false
+    const res = await axios.get(`${API_URL}/usuarios/me/`)
+    currentUser.value = res.data
+    isAuthenticated.value = true
+    isAdmin.value = !!(res.data.is_staff || res.data.is_superuser)
+  } catch (err) {
+    currentUser.value = null
+    isAuthenticated.value = false
+    isAdmin.value = false
+    showError('Não foi possível carregar informações do usuário.')
   }
 }
 
 const fetchDadosAuxiliares = async () => {
+  setupAuth()
   try {
-    const [vRes, pRes, sRes] = await Promise.all([
+    const [vRes, sRes] = await Promise.all([
       axios.get(`${API_URL}/veterinarios/`).catch(() => ({ data: [] })),
-      axios.get(`${API_URL}/pets/`).catch(() => ({ data: [] })),
       axios.get(`${API_URL}/servicos/`).catch(() => ({ data: [] }))
     ])
 
-    veterinarios.value = vRes.data.results || vRes.data
-    pets.value = (pRes.data.results || pRes.data).map(p => ({
+    let petsRes = []
+    if (currentUser.value?.tutor?.id) {
+      petsRes = await axios.get(`${API_URL}/pets/?tutor=${currentUser.value.tutor.id}`).catch(() => ({ data: [] }))
+    }
+
+    veterinarios.value = vRes.data.results || vRes.data || []
+    pets.value = (petsRes.data.results || petsRes.data || []).map(p => ({
       ...p,
-      tutor_nome: p.tutor?.nome || 'Sem tutor'
+      tutor_nome: p.tutor?.nome_completo || p.tutor?.nome || 'Sem tutor'
     }))
-    servicos.value = sRes.data.results || sRes.data
-  } catch (error) {
-    console.error(error)
+    servicos.value = sRes.data.results || sRes.data || []
+  } catch {
+    veterinarios.value = []
+    pets.value = []
+    servicos.value = []
     showError('Erro ao carregar dados auxiliares.')
   }
 }
 
-const criarAgendamento = async () => {
-  submitError.value = null
-
-  if (
-    !novoAgendamento.value.data_hora ||
-    !novoAgendamento.value.pet ||
-    !novoAgendamento.value.veterinario ||
-    !novoAgendamento.value.servico
-  ) {
-    showError('Todos os campos são obrigatórios.')
-    return
-  }
-
-  try {
-    const payload = {
-      data_hora: new Date(novoAgendamento.value.data_hora).toISOString(),
-      pet: parseInt(novoAgendamento.value.pet),
-      veterinario: parseInt(novoAgendamento.value.veterinario),
-      servico: parseInt(novoAgendamento.value.servico),
-      status: 'pendente'
-    }
-
-    await axios.post(`${API_URL}/agendamentos/`, payload)
-
-    fecharModal()
-    await fetchAgendamentos()
-    showSuccess('Agendamento criado com sucesso!')
-
-    await nextTick()
-    router.push({ name: 'Agendamentos' })
-
-  } catch (error) {
-    console.error(error)
-    showError(
-      error.response?.data
-        ? `Erro: ${JSON.stringify(error.response.data)}`
-        : 'Erro ao criar agendamento.'
-    )
-  }
-}
-
-const confirmarAgendamento = async (id) => {
-  try {
-    await axios.patch(`${API_URL}/agendamentos/${id}/`, { status: 'confirmado' })
-    fetchAgendamentos()
-    showSuccess('Agendamento confirmado!')
-  } catch {
-    showError('Erro ao confirmar agendamento.')
-  }
-}
-
-const cancelarAgendamento = async (id) => {
-  if (!confirm('Tem certeza que deseja cancelar este agendamento?')) return
-  try {
-    await axios.patch(`${API_URL}/agendamentos/${id}/`, { status: 'cancelado' })
-    fetchAgendamentos()
-    showSuccess('Agendamento cancelado!')
-  } catch {
-    showError('Erro ao cancelar agendamento.')
-  }
-}
-
-
-const deletarAgendamento = async (id) => {
-  if (!confirm('Tem certeza que deseja excluir definitivamente este agendamento?')) return
-  
-  try {
-    await axios.delete(`${API_URL}/agendamentos/${id}/`)
-    fetchAgendamentos()
-    showSuccess('Agendamento excluído com sucesso!')
-  } catch (error) {
-    console.error(error)
-    showError('Erro ao excluir agendamento.')
-  }
-}
-
-const fetchProximosAgendamentos = async () => {
+const fetchAgendamentos = async () => {
   loading.value = true
+  setupAuth()
   try {
-    const hoje = new Date().toISOString().split('T')[0]
-
-    const { data } = await axios.get(`${API_URL}/agendamentos/`, {
-      params: { data_inicio: hoje }
-    })
-
-    agendamentos.value = data.results || []
-    showSuccess('Exibindo próximos agendamentos!')
+    const res = await axios.get(`${API_URL}/agendamentos/`)
+    agendamentos.value = res.data.results || res.data || []
   } catch {
-    showError('Erro ao carregar próximos agendamentos.')
+    agendamentos.value = []
+    showError('Não foi possível carregar agendamentos.')
   } finally {
     loading.value = false
   }
 }
 
-onMounted(() => {
-  fetchAgendamentos()
-  fetchDadosAuxiliares()
+const criarAgendamento = async () => {
+  actionLoading.value = true
+  setupAuth()
+  try {
+    await axios.post(`${API_URL}/agendamentos/`, novoAgendamento.value)
+    showSuccess('Agendamento criado com sucesso!')
+    fecharModal()
+    await fetchAgendamentos()
+  } catch (err) {
+    showError(err.response?.data?.non_field_errors?.[0] || 'Falha ao criar agendamento.')
+  } finally {
+    actionLoading.value = false
+  }
+}
+
+const confirmarAgendamento = async (id) => {
+  actionLoading.value = true
+  setupAuth()
+  try {
+    await axios.patch(`${API_URL}/agendamentos/${id}/`, { status: 'confirmado' })
+    showSuccess('Agendamento confirmado!')
+    await fetchAgendamentos()
+  } catch {
+    showError('Erro ao confirmar agendamento.')
+  } finally {
+    actionLoading.value = false
+  }
+}
+
+const cancelarAgendamento = async (id) => {
+  actionLoading.value = true
+  setupAuth()
+  try {
+    await axios.patch(`${API_URL}/agendamentos/${id}/`, { status: 'cancelado' })
+    showSuccess('Agendamento cancelado!')
+    await fetchAgendamentos()
+  } catch {
+    showError('Erro ao cancelar agendamento.')
+  } finally {
+    actionLoading.value = false
+  }
+}
+
+const deletarAgendamento = async (id) => {
+  actionLoading.value = true
+  setupAuth()
+  try {
+    await axios.delete(`${API_URL}/agendamentos/${id}/`)
+    showSuccess('Agendamento excluído!')
+    await fetchAgendamentos()
+  } catch {
+    showError('Erro ao deletar agendamento.')
+  } finally {
+    actionLoading.value = false
+  }
+}
+
+const clearFilters = () => { filters.value = { data: '', veterinario: null, pet: null, status: '' } }
+
+const filteredAgendamentos = computed(() => {
+  return agendamentos.value.filter(a => {
+    const matchData = !filters.value.data || a.data_hora?.startsWith(filters.value.data)
+    const matchVet = !filters.value.veterinario || a.veterinario_info?.id === filters.value.veterinario
+    const matchPet = !filters.value.pet || a.pet_info?.id === filters.value.pet
+    const matchStatus = !filters.value.status || a.status === filters.value.status
+    return matchData && matchVet && matchPet && matchStatus
+  })
+})
+
+onMounted(async () => {
+  setupAuth()
+  await fetchCurrentUser()
+  if (isAuthenticated.value) {
+    await fetchDadosAuxiliares()
+    await fetchAgendamentos()
+    
+  }
 })
 </script>
+
 
 
 <template>
   <div class="agendamentos-container">
     <h1>Agendamentos</h1>
-    
+
     <div v-if="submitError" class="alert alert-error">{{ submitError }}</div>
     <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
 
     <div class="filters">
       <div class="filter-group">
-        <label for="status">Status:</label>
-        <select id="status" v-model="filters.status" @change="fetchAgendamentos">
+        <label>Status:</label>
+        <select v-model="filters.status">
           <option value="">Todos</option>
           <option value="pendente">Pendente</option>
           <option value="confirmado">Confirmado</option>
@@ -243,63 +197,45 @@ onMounted(() => {
     </div>
 
     <div class="actions">
-      <button @click="showNovoAgendamento = true" class="btn-primary">Novo Agendamento</button>
-      <button @click="fetchProximosAgendamentos" class="btn-secondary">Próximos Agendamentos</button>
+      <button v-if="isAuthenticated" @click="showNovoAgendamento = true" class="btn-primary">Novo Agendamento</button>
     </div>
 
     <div class="agendamentos-list">
-      <div v-if="loading" class="loading"><div class="spinner"></div> Carregando...</div>
-      <div v-else-if="agendamentos.length === 0" class="no-data"><p>Nenhum agendamento encontrado.</p></div>
+      <div v-if="loading" class="loading">Carregando...</div>
+      <div v-else-if="agendamentos.length === 0" class="no-data">Nenhum agendamento encontrado.</div>
 
       <div v-else class="agendamentos-grid">
-        <div v-for="agendamento in agendamentos" :key="agendamento.id" class="agendamento-card">
+        <div v-for="agendamento in filteredAgendamentos" :key="agendamento.id" class="agendamento-card">
           <div class="agendamento-header">
             <h3>{{ formatDateTime(agendamento.data_hora) }}</h3>
             <span :class="`status status-${agendamento.status}`">{{ getStatusDisplay(agendamento.status) }}</span>
           </div>
 
           <div class="agendamento-info">
-            <div><strong>Pet:</strong> {{ agendamento.pet_info?.nome || 'N/A' }}</div>
-            <div><strong>Veterinário:</strong> {{ agendamento.veterinario_info?.nome_completo || 'N/A' }}</div>
-            <div><strong>Serviço:</strong> {{ agendamento.servico_info?.nome || 'N/A' }}</div>
-            <div><strong>Tutor:</strong> {{ agendamento.tutor_info?.nome || 'N/A' }}</div>
+            <div><strong>Pet:</strong> {{ agendamento.pet_info?.nome || '—' }}</div>
+            <div><strong>Veterinário:</strong> {{ agendamento.veterinario_info?.nome_completo || '—' }}</div>
+            <div><strong>Serviço:</strong> {{ agendamento.servico_info?.nome || '—' }}</div>
+            <div><strong>Tutor:</strong> {{ agendamento.tutor_info?.nome_completo || agendamento.tutor_info?.nome || '—' }}</div>
           </div>
+
           <div class="agendamento-actions">
-
-          
-            <button 
-              v-if="agendamento.status === 'pendente'" 
-              @click="confirmarAgendamento(agendamento.id)" 
+            <button
+              v-if="isAdmin && agendamento.status === 'pendente'"
+              @click="confirmarAgendamento(agendamento.id)"
               class="btn-success"
-            >
-              Confirmar
-            </button>
+            >Confirmar</button>
 
-            <button 
-              v-if="agendamento.status !== 'cancelado'" 
-              @click="cancelarAgendamento(agendamento.id)" 
+            <button
+              v-if="isAdmin && agendamento.status !== 'cancelado'"
+              @click="cancelarAgendamento(agendamento.id)"
               class="btn-danger"
-            >
-              Cancelar
-            </button>
+            >Cancelar</button>
 
-            <button 
-              v-if="agendamento.status === 'cancelado'" 
-              @click="deletarAgendamento(agendamento.id)" 
+            <button
+              v-if="isAdmin && agendamento.status === 'cancelado'"
+              @click="deletarAgendamento(agendamento.id)"
               class="btn-trash"
-              title="Excluir"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" 
-                viewBox="0 0 24 24" fill="none" stroke="currentColor" 
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
-                <path d="M10 11v6"></path>
-                <path d="M14 11v6"></path>
-                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
-              </svg>
-            </button>
-
+            >Excluir</button>
           </div>
         </div>
       </div>
@@ -311,40 +247,34 @@ onMounted(() => {
           <h2>Novo Agendamento</h2>
           <button @click="fecharModal" class="btn-close">&times;</button>
         </div>
-        
+
         <form @submit.prevent="criarAgendamento">
           <div class="form-group">
-            <label for="nova_data_hora">Data e Hora:</label>
-            <input type="datetime-local" id="nova_data_hora" v-model="novoAgendamento.data_hora" required>
+            <label>Data e Hora:</label>
+            <input type="datetime-local" v-model="novoAgendamento.data_hora" required>
           </div>
 
           <div class="form-group">
-            <label for="novo_pet">Pet:</label>
-            <select id="novo_pet" v-model="novoAgendamento.pet" required>
+            <label>Pet:</label>
+            <select v-model="novoAgendamento.pet" required>
               <option value="">Selecione um pet</option>
-              <option v-for="pet in pets" :key="pet.id" :value="pet.id">
-                {{ pet.nome }} ({{ pet.tutor_nome || 'Sem tutor' }})
-              </option>
+              <option v-for="pet in pets" :key="pet.id" :value="pet.id">{{ pet.nome }} ({{ pet.tutor_nome }})</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label for="novo_vet">Veterinário:</label>
-            <select id="novo_vet" v-model="novoAgendamento.veterinario" required>
+            <label>Veterinário:</label>
+            <select v-model="novoAgendamento.veterinario" required>
               <option value="">Selecione</option>
-              <option v-for="vet in veterinarios" :key="vet.id" :value="vet.id">
-                {{ vet.nome_completo }} - {{ vet.especialidade }}
-              </option>
+              <option v-for="vet in veterinarios" :key="vet.id" :value="vet.id">{{ vet.nome_completo || vet.nome }}</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label for="novo_servico">Serviço:</label>
-            <select id="novo_servico" v-model="novoAgendamento.servico" required>
+            <label>Serviço:</label>
+            <select v-model="novoAgendamento.servico" required>
               <option value="">Selecione um serviço</option>
-              <option v-for="serv in servicos" :key="serv.id" :value="serv.id">
-                {{ serv.nome }}
-              </option>
+              <option v-for="serv in servicos" :key="serv.id" :value="serv.id">{{ serv.nome }}</option>
             </select>
           </div>
 
@@ -357,7 +287,6 @@ onMounted(() => {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .agendamentos-container {
@@ -548,7 +477,7 @@ onMounted(() => {
   color: #2d2d2d;
 }
 
-/* Botão X */
+
 .btn-close {
   background: none;
   border: none;
