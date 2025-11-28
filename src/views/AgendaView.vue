@@ -1,11 +1,10 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
-import axios from 'axios'
 import { useRouter } from 'vue-router'
+import { api } from '../plugins/axios'
 
 const router = useRouter()
-const API_URL = 'http://127.0.0.0:19003/api'
 
 const agendamentos = ref([])
 const veterinarios = ref([])
@@ -72,26 +71,23 @@ const fecharModal = () => {
   submitError.value = null
 }
 
-/* ------------------------------
-      FUNÇÃO CORRIGIDA
---------------------------------*/
 const fetchAgendamentos = async () => {
   loading.value = true
   try {
-    const { data } = await axios.get(`${API_URL}/agendamentos/`, {
+    const { data } = await api.get(`agendamentos/`, {
       params: filters.value
     })
 
-    const lista = data.results || []
+    const lista = data || []
 
     agendamentos.value = lista.map(a => ({
       id: a.id,
       data_hora: a.data_hora,
       status: a.status,
-      pet_info: a.pet || null,
-      veterinario_info: a.veterinario || null,
-      servico_info: a.servico || null,
-      tutor_info: a.pet?.tutor || null
+      pet_info: a.pet_info || null,
+      veterinario_info: a.veterinario_info || null,
+      servico_info: a.servico_info || null,
+      tutor_info: a.pet_info?.tutor_info || null
     }))
   } catch (error) {
     console.error(error)
@@ -105,9 +101,9 @@ const fetchAgendamentos = async () => {
 const fetchDadosAuxiliares = async () => {
   try {
     const [vRes, pRes, sRes] = await Promise.all([
-      axios.get(`${API_URL}/veterinarios/`).catch(() => ({ data: [] })),
-      axios.get(`${API_URL}/pets/`).catch(() => ({ data: [] })),
-      axios.get(`${API_URL}/servicos/`).catch(() => ({ data: [] }))
+      api.get(`veterinarios/`).catch(() => ({ data: [] })),
+      api.get(`pets/`).catch(() => ({ data: [] })),
+      api.get(`servicos/`).catch(() => ({ data: [] }))
     ])
 
     veterinarios.value = vRes.data.results || vRes.data
@@ -144,14 +140,13 @@ const criarAgendamento = async () => {
       status: 'pendente'
     }
 
-    await axios.post(`${API_URL}/agendamentos/`, payload)
+    await api.post(`agendamentos/`, payload)
 
     fecharModal()
     await fetchAgendamentos()
     showSuccess('Agendamento criado com sucesso!')
 
     await nextTick()
-    router.push({ name: 'Agendamentos' })
 
   } catch (error) {
     console.error(error)
@@ -165,7 +160,7 @@ const criarAgendamento = async () => {
 
 const confirmarAgendamento = async (id) => {
   try {
-    await axios.patch(`${API_URL}/agendamentos/${id}/`, { status: 'confirmado' })
+    await api.patch(`agendamentos/${id}/`, { status: 'confirmado' })
     fetchAgendamentos()
     showSuccess('Agendamento confirmado!')
   } catch {
@@ -176,7 +171,7 @@ const confirmarAgendamento = async (id) => {
 const cancelarAgendamento = async (id) => {
   if (!confirm('Tem certeza que deseja cancelar este agendamento?')) return
   try {
-    await axios.patch(`${API_URL}/agendamentos/${id}/`, { status: 'cancelado' })
+    await api.patch(`agendamentos/${id}/`, { status: 'cancelado' })
     fetchAgendamentos()
     showSuccess('Agendamento cancelado!')
   } catch {
@@ -189,7 +184,7 @@ const fetchProximosAgendamentos = async () => {
   try {
     const hoje = new Date().toISOString().split('T')[0]
 
-    const { data } = await axios.get(`${API_URL}/agendamentos/`, {
+    const { data } = await api.get(`agendamentos/`, {
       params: { data_inicio: hoje }
     })
 
@@ -249,7 +244,7 @@ onMounted(() => {
             <div><strong>Pet:</strong> {{ agendamento.pet_info?.nome || 'N/A' }}</div>
             <div><strong>Veterinário:</strong> {{ agendamento.veterinario_info?.nome_completo || 'N/A' }}</div>
             <div><strong>Serviço:</strong> {{ agendamento.servico_info?.nome || 'N/A' }}</div>
-            <div><strong>Tutor:</strong> {{ agendamento.tutor_info?.nome || 'N/A' }}</div>
+            <div><strong>Tutor:</strong> {{ agendamento.tutor_info?.name || 'N/A' }}</div>
           </div>
 
           <div class="agendamento-actions">
@@ -278,7 +273,7 @@ onMounted(() => {
             <select id="novo_pet" v-model="novoAgendamento.pet" required>
               <option value="">Selecione um pet</option>
               <option v-for="pet in pets" :key="pet.id" :value="pet.id">
-                {{ pet.nome }} ({{ pet.tutor_nome || 'Sem tutor' }})
+                {{ pet.nome }} ({{ pet.tutor_info?.name || 'Sem tutor' }})
               </option>
             </select>
           </div>

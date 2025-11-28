@@ -1,55 +1,100 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import axios from 'axios'
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import { api } from "@/plugins/axios";
 
-export const useUserStore = defineStore('user', () => {
-  const nomeCompleto = ref('')
-  const email = ref('')
+export const useUserStore = defineStore("user", () => {
+  const tutor = ref(null);
+  const acessToken = ref(null);
+  const refreshToken = ref(null);
+  const isLoggedIn = ref(false);
 
-  const petNome = ref('')
-  const raca = ref('')
-  const idade = ref('')
-  const especie = ref('')
-  const observacoes = ref('')
+  async function setUser(acess, refresh) {
+    localStorage.setItem("access_token", acess);
+    localStorage.setItem("refresh_token", refresh);
+    localStorage.setItem("usuarioLogado", "true");
 
-  function setUser(user) {
-    nomeCompleto.value = user.nome_completo
-    email.value = user.email
-    petNome.value = user.pet_nome || ''
-    raca.value = user.raca || ''
-    idade.value = user.idade || ''
-    especie.value = user.especie || ''
-    observacoes.value = user.observacoes || ''
+    acessToken.value = acess;
+    refreshToken.value = refresh;
+    isLoggedIn.value = true;
+
+    return await getUser();
+  }
+
+  async function getUser() {
+    if (isLoggedIn) {
+      const me = await api.get("me/");
+
+      localStorage.setItem("user_info", JSON.stringify(me.data));
+      tutor.value = me.data;
+    }
   }
 
   async function fetchUser() {
-    try {
-      const response = await axios.get('/api/user/') 
-      setUser(response.data)
-    } catch (error) {
-      console.error('Erro ao buscar usuário:', error)
+    const isLoggedIn = localStorage.getItem("usuarioLogado") === "true";
+    if (isLoggedIn) {
+      const userInfo = JSON.parse(localStorage.getItem("user_info"));
+      const accessToken = localStorage.getItem("access_token");
+      const refreshToken = localStorage.getItem("refresh_token");
+
+      await setUser(accessToken, refreshToken);
     }
+
+    const userInfo = JSON.parse(localStorage.getItem("user_info"));
   }
   function clearUser() {
-    nomeCompleto.value = ''
-    email.value = ''
-    petNome.value = ''
-    raca.value = ''
-    idade.value = ''
-    especie.value = ''
-    observacoes.value = ''
+    localStorage.removeItem("user_info");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("usuarioLogado");
+
+    tutor.value = null;
+    acessToken.value = null;
+    refreshToken.value = null;
+    isLoggedIn.value = false;
+  }
+
+  async function logout() {
+    clearUser();
+  }
+
+  async function login(email, password) {
+    const res = await api.post(`token/`, {
+      email: email.value,
+      password: password.value,
+    });
+
+    await setUser(res.data.access, res.data.refresh);
+  }
+
+  async function cadastro(name, email, password, confirmPassword) {
+    const res = await api.post("usuarios/", {
+      name: name.value,
+      email: email.value,
+      password: password.value,
+    });
+
+    await login(email, password);
+
+    return res.data;
+  }
+
+  async function getMyPets() {
+    if (isLoggedIn) {
+      const pets = await api.get("pets/");
+      return pets.data;
+    }
   }
 
   return {
-    nomeCompleto,
-    email,
-    petNome,
-    raca,
-    idade,
-    especie,
-    observacoes,
+    tutor,
+    acessToken,
+    refreshToken,
+    isLoggedIn,
     setUser,
+    getMyPets,
     fetchUser,
-    clearUser,
-  }
-})
+    cadastro,
+    login,
+    logout,
+  };
+});

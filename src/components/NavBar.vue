@@ -9,8 +9,9 @@ const menuAtivo = ref(false);
 const isMobile = ref(window.innerWidth <= 900);
 
 const userStore = useUserStore();
-const nomeUsuario = computed(() => userStore.nomeCompleto);
-
+const nomeUsuario = computed(() => {
+  return userStore.tutor?.name || "Usuário";
+});
 const openProfile = () => {
   showProfile.value = true;
 };

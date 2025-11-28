@@ -15,18 +15,7 @@ async function login() {
   erro.value = ''
 
   try {
-    const api = import.meta.env.VITE_API_URL
-
-    const res = await axios.post(`${api}/login/`, {
-      email: email.value,
-      senha: senha.value
-    })
-
-    localStorage.setItem('access_token', res.data.access)
-    localStorage.setItem('refresh_token', res.data.refresh)
-    localStorage.setItem('usuarioLogado', 'true')
-
-    userStore.setUser(res.data.tutor)
+    await userStore.login(email, senha);
 
     router.push({ name: 'home' })
   } catch (e) {

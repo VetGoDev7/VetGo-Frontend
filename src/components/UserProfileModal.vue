@@ -1,11 +1,26 @@
 <script setup>
-import { useUserStore } from '@/stores/userStore'
+import { useUserStore } from "@/stores/userStore";
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
-const props = defineProps({ isOpen: Boolean })
-const emit = defineEmits(['close'])
-const closeModal = () => emit('close')
+const props = defineProps({ isOpen: Boolean });
+const emit = defineEmits(["close"]);
+const closeModal = () => emit("close");
+const userStore = useUserStore();
+const router = useRouter();
+const userPets = ref([]);
 
-const userStore = useUserStore()
+const logout = () => {
+  userStore.logout();
+  closeModal();
+  router.push('/');
+};
+
+onMounted(async () => {
+  if (userStore.isLoggedIn) {
+    userPets.value = await userStore.getMyPets();
+  }
+});
 </script>
 
 <template>
@@ -15,27 +30,60 @@ const userStore = useUserStore()
 
       <div class="profile-header">
         <img src="/profile.png" alt="Avatar" class="avatar" />
-        <h2>{{ userStore.nomeCompleto }}</h2>
+        <h2>{{ userStore.tutor?.name }}</h2>
       </div>
 
       <form class="form">
-        <input type="text" :value="userStore.nomeCompleto" disabled />
-        <input type="email" :value="userStore.email" disabled />
-        <input type="text" :value="userStore.petNome" placeholder="Nome do pet" />
-        <input type="text" :value="userStore.raca" placeholder="Raça" />
-        <div class="duo">
-          <input type="text" :value="userStore.idade" placeholder="Idade" />
-          <input type="text" :value="userStore.especie" placeholder="Espécie" />
-        </div>
-        <textarea :value="userStore.observacoes" placeholder="Observações importantes"></textarea>
+        <input type="text" :value="userStore.tutor?.name" disabled />
+        <input type="email" :value="userStore.tutor?.email" disabled />
+        <div class="pets-section">
+          <h3>Meus Pets</h3>
+          <div v-if="userPets.length" class="pets-list">
+            <div v-for="pet in userPets" :key="pet.id" class="pet-card">
+              <h4>{{ pet.nome }}</h4>
+              <p><strong>Raça:</strong> {{ pet.raca }}</p>
+              <p><strong>Idade:</strong> {{ pet.idade }}</p>
+              <p><strong>Espécie:</strong> {{ pet.especie }}</p>
 
+              <p v-if="pet.observacao">
+                <strong>Obs:</strong> {{ pet.observacao }}
+              </p>
+            </div>
+          </div>
+
+          <p v-else class="no-pets">Nenhum pet cadastrado ainda.</p>
+        </div>
         <button type="button" class="edit-btn">Editar informações</button>
+        <button type="button" class="logout-btn" @click="logout">
+          Sair da conta
+        </button>
       </form>
     </div>
   </div>
 </template>
- 
+
 <style scoped>
+
+.logout-btn {
+  width: 100%;
+  background: #d9534f;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.logout-btn:hover {
+  background: #c9302c;
+}
+
+.pets-section {
+  margin-bottom: 1.5rem;
+}
 
 .overlay {
   position: fixed;
@@ -43,7 +91,7 @@ const userStore = useUserStore()
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -56,7 +104,7 @@ const userStore = useUserStore()
   width: 400px;
   max-width: 90%;
   position: relative;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 .close {
   position: absolute;
@@ -138,7 +186,7 @@ const userStore = useUserStore()
   }
 
   .duo {
-    flex-direction: column;  /* empilha idade + espécie no mobile */
+    flex-direction: column; /* empilha idade + espécie no mobile */
   }
 
   .form input,
@@ -178,4 +226,28 @@ const userStore = useUserStore()
   }
 }
 
+.pets-section h3 {
+  margin: 1rem 0 0.5rem;
+  color: #4a7d4a;
+}
+.pets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.pet-card {
+  background: #f2f8f2;
+  border: 1px solid #a7c9a7;
+  padding: 12px;
+  border-radius: 10px;
+}
+.pet-card h4 {
+  margin-bottom: 4px;
+  color: #2a5d2a;
+}
+.no-pets {
+  text-align: center;
+  color: #777;
+  margin-top: 10px;
+}
 </style>

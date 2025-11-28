@@ -2,7 +2,9 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
+import { api } from "@/plugins/axios";
 import "@/assets/base.css";
+import { useUserStore } from "../stores/userStore";
 
 const nome_completo = ref("");
 const email = ref("");
@@ -15,6 +17,7 @@ const idade = ref("");
 const observacao = ref("");
 const mensagem = ref("");
 const router = useRouter();
+const userStore = useUserStore();
 
 async function cadastrar() {
   mensagem.value = "";
@@ -49,21 +52,16 @@ async function cadastrar() {
     return;
   }
   try {
-    const tutorResponse = await axios.post(
-      import.meta.env.VITE_API_URL + "/tutores/",
-      {
-        nome_completo: nome_completo.value,
-        email: email.value,
-        senha: senha.value,
-        confirmar_senha: confirmar_senha.value,
-      }
+    const tutorResponse = await userStore.cadastro(
+      nome_completo,
+      email,
+      senha,
+      confirmar_senha
     );
 
-    const tutor = tutorResponse.data;
+    const tutor = tutorResponse;
 
-    console.log("idade antes do envio:", idade.value, typeof idade.value);
-
-    await axios.post(import.meta.env.VITE_API_URL + "/pets/", {
+    await api.post("pets/", {
       nome: nome_pet.value,
       especie: especie.value,
       raca: raca.value,
@@ -74,12 +72,13 @@ async function cadastrar() {
 
     mensagem.value = "Cadastro realizado com sucesso!";
     setTimeout(() => {
-      router.push("/login");
+      router.push("/home");
     }, 1500);
   } catch (err) {
     if (err.response) {
       mensagem.value = "Este email já está cadastrado.";
     } else {
+      console.error(err);
       mensagem.value = "Erro de conexão com o servidor.";
     }
   }
